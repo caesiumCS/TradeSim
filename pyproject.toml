@@ -7,6 +7,9 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.12"
+packages = [
+    { include = "trade_simulator", from = "src" }
+]
 dependencies = [
     "matplotlib (>=3.10.1,<4.0.0)",
     "numpy (>=2.2.4,<3.0.0)",
