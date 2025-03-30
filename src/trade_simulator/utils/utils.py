@@ -1,9 +1,8 @@
-
-from trade_simulator.utils.consts import AMM_TYPES
-
 from typing import Any, Dict, Optional
 
 import yaml
+
+from trade_simulator.utils.consts import AMM_TYPES
 
 
 def read_settings(path: str) -> Optional[Dict[str, Any]]:
@@ -16,13 +15,16 @@ def read_settings(path: str) -> Optional[Dict[str, Any]]:
     return data
 
 
-def check_amm_settings(amm_settings: Dict[str, Any]):
+def check_amm_settings(amm_settings: Dict[str, Any], pool_settings: Dict[str, Any]):
     if amm_settings.get("type") is None:
         raise ValueError(f"Expected to have type of amm.")
 
     amm_type = amm_settings["type"]
     if amm_type not in AMM_TYPES:
         raise ValueError(f"Amm type {amm_type} is not supported.")
+
+    if amm_type == "Uniswap" and len(pool_settings["tokens"]) != 2:
+        raise ValueError(f"For {amm_type} type 2 tokens only required.")
 
 
 def check_pools_settings(pools_settings: Dict[str, Any]):
@@ -32,21 +34,27 @@ def check_pools_settings(pools_settings: Dict[str, Any]):
         pool_id = settings["id"]
 
         if settings.get("amm_settings") is None:
-            raise ValueError(f"Pool with id: {pool_id} is expected to have an 'amm_settings' field.")
-        check_amm_settings(settings["amm_settings"])
+            raise ValueError(
+                f"Pool with id: {pool_id} is expected to have an 'amm_settings' field."
+            )
+        check_amm_settings(settings["amm_settings"], settings)
 
         if pool_id in ids:
             raise ValueError(f"Found identical pool id: {pool_id}.")
         ids.append(pool_id)
 
         if len(settings["tokens"]) < 2:
-            raise ValueError(f"Pool with id: {pool_id} is expected to have more or equal than 2 tokens.")
+            raise ValueError(
+                f"Pool with id: {pool_id} is expected to have more or equal than 2 tokens."
+            )
 
         token_names = []
         for token in settings["tokens"]:
             name = token["name"]
             if name in token_names:
-                raise ValueError(f"Found identical token name in pool with id: {pool_id}.")
+                raise ValueError(
+                    f"Found identical token name in pool with id: {pool_id}."
+                )
             token_names.append(token)
 
             if token["start_quantity"] <= 0:

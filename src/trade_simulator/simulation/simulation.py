@@ -11,13 +11,9 @@ class Simulation:
 
         self.pools = self.create_pools(self.simulation_build_args["pools_settings"])
 
-
     def create_pools(self, pools_settings: Dict[str, Any]) -> List[Pool]:
         check_pools_settings(pools_settings)
         pools = []
         for pool_settings in pools_settings["pools"]:
             pools.append(Pool(**pool_settings))
         return pools
-
-
-
