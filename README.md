@@ -1,1 +1,1 @@
-# TradeSim
+# Agent Based Trading Simulator
