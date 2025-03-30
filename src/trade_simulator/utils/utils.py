@@ -17,7 +17,7 @@ def read_settings(path: str) -> Optional[Dict[str, Any]]:
 
 def check_amm_settings(amm_settings: Dict[str, Any], pool_settings: Dict[str, Any]):
     if amm_settings.get("type") is None:
-        raise ValueError(f"Expected to have type of amm.")
+        raise ValueError("Expected to have type of amm.")
 
     amm_type = amm_settings["type"]
     if amm_type not in AMM_TYPES:
@@ -35,7 +35,8 @@ def check_pools_settings(pools_settings: Dict[str, Any]):
 
         if settings.get("amm_settings") is None:
             raise ValueError(
-                f"Pool with id: {pool_id} is expected to have an 'amm_settings' field."
+                f"Pool with id: {pool_id} is expected "
+                "to have an 'amm_settings' field."
             )
         check_amm_settings(settings["amm_settings"], settings)
 
@@ -45,7 +46,8 @@ def check_pools_settings(pools_settings: Dict[str, Any]):
 
         if len(settings["tokens"]) < 2:
             raise ValueError(
-                f"Pool with id: {pool_id} is expected to have more or equal than 2 tokens."
+                f"Pool with id: {pool_id} is expected"
+                " to have more or equal than 2 tokens."
             )
 
         token_names = []
@@ -58,4 +60,4 @@ def check_pools_settings(pools_settings: Dict[str, Any]):
             token_names.append(token)
 
             if token["start_quantity"] <= 0:
-                raise ValueError(f"Start token quantity has to be more than zero.")
+                raise ValueError("Start token quantity has to be more than zero.")
