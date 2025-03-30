@@ -1,0 +1,3 @@
+AMM_TYPES = [
+    "Uniswap",
+]

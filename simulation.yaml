@@ -1,2 +1,18 @@
 # Simulation parameters
 
+meta_info:
+  experiment_id: 1
+  experiment_name: "Test run for development"
+
+simulation:
+  pools_settings:
+    pools:
+      - id: 1
+        name: "USDT to DOGE pool"
+        amm_settings:
+          type: Uniswap
+        tokens:
+          - name: USDT
+            start_quantity: 1000
+          - name: DOGE
+            start_quantity: 1000
