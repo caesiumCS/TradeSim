@@ -7,9 +7,11 @@ class Pool:
         self.name = kwargs["name"]
 
         self.tokens_info = self.create_tokens_pool(kwargs["tokens"])
+        self.amm_agent = self.generate_amm(kwargs["amm_settings"])
 
     def generate_amm(self, amm_settings: Dict[str, Any]):
-        pass
+        if amm_settings["type"] == "Uniswap":
+            pass
 
     def create_tokens_pool(
         self, tokens_info: Dict[str, Union[str, int]]
