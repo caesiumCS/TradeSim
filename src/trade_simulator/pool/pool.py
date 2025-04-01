@@ -1,3 +1,6 @@
+from trade_simulator.amm_agents.basic_amm import AMM
+from trade_simulator.amm_agents.uniswap_amm import UniswapAMM
+
 from typing import Any, Dict, Union
 
 
@@ -9,9 +12,9 @@ class Pool:
         self.tokens_info = self.create_tokens_pool(kwargs["tokens"])
         self.amm_agent = self.generate_amm(kwargs["amm_settings"])
 
-    def generate_amm(self, amm_settings: Dict[str, Any]):
+    def generate_amm(self, amm_settings: Dict[str, Any]) -> AMM:
         if amm_settings["type"] == "Uniswap":
-            pass
+            return UniswapAMM(self, amm_settings)
 
     def create_tokens_pool(
         self, tokens_info: Dict[str, Union[str, int]]
