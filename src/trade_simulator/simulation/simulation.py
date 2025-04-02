@@ -1,9 +1,8 @@
+import os
 from typing import Any, Dict
 
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.utils import check_pools_settings
-
-import os
 
 
 class Simulation:
