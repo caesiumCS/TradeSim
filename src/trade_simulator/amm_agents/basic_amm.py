@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
-from trade_simulator.pool.pool import Pool
 from trade_simulator.order.order import Order
+from trade_simulator.pool.pool import Pool
+from trade_simulator.utils.consts import ORDER_OPERATION_STATUSES
 
 
 class AMM(ABC):
@@ -17,9 +18,20 @@ class AMM(ABC):
     def sort_orders(self):
         pass
 
-    @abstractmethod
     def clean_order_book(self):
-        pass
+        orders_to_statuses = {}
+        for status in ORDER_OPERATION_STATUSES:
+            orders_to_statuses[status] = []
+
+        for order in self.pool.order_book:
+            orders_to_statuses[order.status].append(order)
+
+        for status in orders_to_statuses.keys():
+            self.pool.metrics[f"number_of_{status}_orders_in_order_book"].append(
+                len(orders_to_statuses[status])
+            )
+
+        self.pool.order_book = orders_to_statuses["Awaiting"]
 
     def execute_orders(self):
         self.sort_orders()
