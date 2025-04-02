@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from trade_simulator.pool.pool import Pool
+from trade_simulator.order.order import Order
 
 
 class AMM(ABC):
@@ -9,9 +10,19 @@ class AMM(ABC):
         self.settings = kwargs
 
     @abstractmethod
-    def complete_order(self):  # TODO - fix arguments
+    def execute_order(self, order: Order):  # TODO - fix arguments
         pass
 
     @abstractmethod
     def sort_orders(self):  # TODO - fix arguments
         pass
+
+    @abstractmethod
+    def clean_order_book(self):  # TODO - fix arguments
+        pass
+
+    def execute_orders(self):
+        self.sort_orders()
+        for order in self.pool.order_book:
+            self.execute_order(order)
+        self.clean_order_book()

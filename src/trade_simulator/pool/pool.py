@@ -1,7 +1,8 @@
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 from trade_simulator.amm_agents.basic_amm import AMM
 from trade_simulator.amm_agents.uniswap_amm import UniswapAMM
+from trade_simulator.order.order import Order
 
 
 class Pool:
@@ -11,6 +12,8 @@ class Pool:
 
         self.tokens_info = self.create_tokens_pool(kwargs["tokens"])
         self.amm_agent = self.generate_amm(kwargs["amm_settings"])
+
+        self.order_book: List[Order] = []
 
     def generate_amm(self, amm_settings: Dict[str, Any]) -> AMM:
         if amm_settings["type"] == "Uniswap":
@@ -23,3 +26,6 @@ class Pool:
         for token_info in tokens_info:
             token_to_quantity[token_info["name"]] = token_info["start_quantity"]
         return token_to_quantity
+
+    def execute_orders(self):
+        self.amm_agent.execute_orders()
