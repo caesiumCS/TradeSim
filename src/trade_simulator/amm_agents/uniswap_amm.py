@@ -11,7 +11,7 @@ class UniswapAMM(AMM):
     def __init__(self, pool: "Pool", **kwargs):
         super().__init__(pool, **kwargs)
 
-    def execute_order(self, order: "Order"):  # TODO - fix arguments
+    def execute_order(self, order: "Order"):
         pass
 
     def sort_orders(self):

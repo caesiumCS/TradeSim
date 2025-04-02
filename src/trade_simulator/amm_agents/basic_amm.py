@@ -14,7 +14,7 @@ class AMM(ABC):
         self.settings = kwargs
 
     @abstractmethod
-    def execute_order(self, order: "Order"):  # TODO - fix arguments
+    def execute_order(self, order: "Order"):
         pass
 
     @abstractmethod
