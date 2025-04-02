@@ -2,15 +2,18 @@ from typing import Optional
 
 from trade_simulator.utils.consts import ORDER_OPERATION_TYPES
 
+
 class Order:
-    def __init__(self,
-                 trader_id:int,
-                 creation_timestamp:int,
-                 operation_type: str,
-                 token: str,
-                 priority:int = 1,
-                 cancel_possibility: bool = True,
-                 lifetime: Optional[int] = None):
+    def __init__(
+        self,
+        trader_id: int,
+        creation_timestamp: int,
+        operation_type: str,
+        token: str,
+        priority: int = 1,
+        cancel_possibility: bool = True,
+        lifetime: Optional[int] = None,
+    ):
         self.trader_id = trader_id
         self.creation_timestamp = creation_timestamp
         self.token = token

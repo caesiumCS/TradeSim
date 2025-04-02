@@ -11,9 +11,15 @@ class Simulation:
 
         self.pools = self.create_pools(self.simulation_build_args["pools_settings"])
 
-    def create_pools(self, pools_settings: Dict[str, Any]) -> List[Pool]:
+    def create_pools(self, pools_settings: Dict[str, Any]) -> Dict[int, Pool]:
         check_pools_settings(pools_settings)
-        pools = []
+        pools = {}
         for pool_settings in pools_settings["pools"]:
-            pools.append(Pool(**pool_settings))
+            pools[pool_settings["id"]] = Pool(**pool_settings)
         return pools
+
+    def prepare_experiment_environment(self, meta_args: Dict[str, Any]):
+        pass
+
+    def generate_metrics_by_pool(self, pool: Pool):
+        pass

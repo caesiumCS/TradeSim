@@ -1,7 +1,7 @@
+from typing import Any, Dict, Union
+
 from trade_simulator.amm_agents.basic_amm import AMM
 from trade_simulator.amm_agents.uniswap_amm import UniswapAMM
-
-from typing import Any, Dict, Union
 
 
 class Pool:
