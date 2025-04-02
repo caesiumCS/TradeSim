@@ -8,10 +8,7 @@ from trade_simulator.utils.consts import AMM_TYPES
 def read_settings(path: str) -> Optional[Dict[str, Any]]:
     data = None
     with open(path, "r") as stream:
-        try:
-            data = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+        data = yaml.safe_load(stream)
     return data
 
 
@@ -58,6 +55,8 @@ def check_pools_settings(pools_settings: Dict[str, Any]):
                 f"Pool with id: {pool_id} is expected "
                 "to have an 'amm_settings' field."
             )
+        if settings.get("tokens") is None:
+            raise ValueError("Pool require 'tokens' field.")
         check_amm_settings(settings["amm_settings"], settings)
 
         if pool_id in ids:
