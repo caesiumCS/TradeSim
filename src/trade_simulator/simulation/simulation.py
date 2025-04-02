@@ -9,14 +9,17 @@ class Simulation:
         self.simulation_build_args = kwargs["simulation"]
         self.simulation_meta_args = kwargs["meta_info"]
 
-        self.pools = self.create_pools(self.simulation_build_args["pools_settings"])
+        self.create_pools(self.simulation_build_args["pools_settings"])
 
-    def create_pools(self, pools_settings: Dict[str, Any]) -> Dict[int, Pool]:
+    def create_pools(self, pools_settings: Dict[str, Any]):
         check_pools_settings(pools_settings)
         pools = {}
         for pool_settings in pools_settings["pools"]:
             pools[pool_settings["id"]] = Pool(**pool_settings)
-        return pools
+        self.pools =  pools
+
+    def create_agents(self, agents_settings: Dict[str, Any]):
+        pass
 
     def prepare_experiment_environment(self, meta_args: Dict[str, Any]):
         pass
