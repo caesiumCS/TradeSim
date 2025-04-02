@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.utils import check_pools_settings

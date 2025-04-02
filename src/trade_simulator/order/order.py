@@ -17,9 +17,12 @@ class Order:
         self.trader_id = trader_id
         self.creation_timestamp = creation_timestamp
         self.token = token
-        self.priority = priority
         self.cancel_possibility = cancel_possibility
         self.lifetime = lifetime
+
+        if priority < 1:
+            raise (f"Order priority has to be more or equal to 1, got {priority}.")
+        self.priority = priority
 
         if operation_type not in ORDER_OPERATION_TYPES:
             raise ValueError(f"Unsupported operation type {operation_type}.")
