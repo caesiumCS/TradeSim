@@ -13,8 +13,11 @@ class Simulation:
         self.prepare_experiment_environment()
         self.create_pools()
 
-    def create_pools(self, pools_settings: Dict[str, Any]):
-        pool_settings = self.simulation_build_args["pools_settings"]
+    def run(self):
+        pass
+
+    def create_pools(self):
+        pools_settings = self.simulation_build_args["pools_settings"]
         check_pools_settings(pools_settings)
         pools = {}
         for pool_settings in pools_settings["pools"]:
@@ -35,11 +38,15 @@ class Simulation:
         if not os.path.exists(f"Experiments_logs/{experiment_name}"):
             os.makedirs(f"Experiments_logs/{experiment_name}")
 
-        self.experiment_logs_path = f"Experiments_logs/{experiment_name}/Experiment_{experiment_id}"
-        if not os.path.exists(self.experiment_logs_path ):
-            os.makedirs(self.experiment_logs_path )
+        self.experiment_logs_path = (
+            f"Experiments_logs/{experiment_name}/Experiment_{experiment_id}"
+        )
+        if not os.path.exists(self.experiment_logs_path):
+            os.makedirs(self.experiment_logs_path)
         else:
-            raise ValueError(f"Experiment with name {experiment_name} and id {experiment_id} already exists.")
+            raise ValueError(
+                f"Experiment with name {experiment_name} and id {experiment_id} already exists."
+            )
 
     def generate_metrics_by_pool(self, pool: Pool):
         pass

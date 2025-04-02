@@ -1,17 +1,20 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-from trade_simulator.order.order import Order
-from trade_simulator.pool.pool import Pool
+if TYPE_CHECKING:
+    from trade_simulator.order.order import Order
+    from trade_simulator.pool.pool import Pool
+
 from trade_simulator.utils.consts import ORDER_OPERATION_STATUSES
 
 
 class AMM(ABC):
-    def __init__(self, pool: Pool, **kwargs):
+    def __init__(self, pool: "Pool", **kwargs):
         self.pool = pool
         self.settings = kwargs
 
     @abstractmethod
-    def execute_order(self, order: Order):  # TODO - fix arguments
+    def execute_order(self, order: "Order"):  # TODO - fix arguments
         pass
 
     @abstractmethod

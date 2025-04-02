@@ -2,3 +2,5 @@ src/trade_simulator/__pycache__/
 src/trade_simulator/pool/__pycache__/
 src/trade_simulator/simulation/__pycache__/
 src/trade_simulator/utils/__pycache__/
+src/trade_simulator/amm_agents/__pycache__/
+src/trade_simulator/order/__pycache__/

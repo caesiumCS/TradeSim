@@ -27,7 +27,7 @@ class Pool:
 
     def generate_amm(self, amm_settings: Dict[str, Any]) -> AMM:
         if amm_settings["type"] == "Uniswap":
-            return UniswapAMM(self, amm_settings)
+            return UniswapAMM(self, **amm_settings)
 
     def create_tokens_pool(
         self, tokens_info: Dict[str, Union[str, int]]
