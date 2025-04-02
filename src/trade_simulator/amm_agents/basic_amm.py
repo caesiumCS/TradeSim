@@ -14,11 +14,11 @@ class AMM(ABC):
         pass
 
     @abstractmethod
-    def sort_orders(self):  # TODO - fix arguments
+    def sort_orders(self):
         pass
 
     @abstractmethod
-    def clean_order_book(self):  # TODO - fix arguments
+    def clean_order_book(self):
         pass
 
     def execute_orders(self):

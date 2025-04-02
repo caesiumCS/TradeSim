@@ -9,6 +9,8 @@ simulation:
     pools:
       - id: 1
         name: "USDT to DOGE pool"
+        steps_to_check_orderbook: 1
+        step_to_start_simulation: 0
         amm_settings:
           type: Uniswap
         tokens:

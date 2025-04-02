@@ -33,6 +33,18 @@ def check_pools_settings(pools_settings: Dict[str, Any]):
     for settings in pools_settings:
         pool_id = settings["id"]
 
+        if settings.get("steps_to_check_orderbook") is None:
+            raise ValueError("Expecting parameter 'steps_to_check_orderbook' in pool settings.")
+        steps_to_check_orderbook = settings["steps_to_check_orderbook"]
+        if steps_to_check_orderbook < 1:
+            raise ValueError(f"Parameter 'steps_to_check_orderbook' has to be more or equal to 1, got {steps_to_check_orderbook}.")
+
+        if settings.get("step_to_start_simulation") is None:
+            raise ValueError("Expecting parameter 'step_to_start_simulation' in pool settings.")
+        step_to_start_simulation = settings["step_to_start_simulation"]
+        if step_to_start_simulation < 0:
+            raise ValueError(f"Parameter 'steps_to_check_orderbook' has to be more or equal to 0, got {step_to_start_simulation}.")
+
         if settings.get("amm_settings") is None:
             raise ValueError(
                 f"Pool with id: {pool_id} is expected "

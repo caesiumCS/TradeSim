@@ -1,6 +1,6 @@
 from typing import Optional
 
-from trade_simulator.utils.consts import ORDER_OPERATION_TYPES
+from trade_simulator.utils.consts import ORDER_OPERATION_TYPES, ORDER_OPERATION_STATUSES
 
 
 class Order:
@@ -13,6 +13,7 @@ class Order:
         priority: int = 1,
         cancel_possibility: bool = True,
         lifetime: Optional[int] = None,
+        status: str = "Awaiting",
     ):
         self.trader_id = trader_id
         self.creation_timestamp = creation_timestamp
@@ -25,5 +26,9 @@ class Order:
         self.priority = priority
 
         if operation_type not in ORDER_OPERATION_TYPES:
-            raise ValueError(f"Unsupported operation type {operation_type}.")
+            raise ValueError(f"Unsupported order operation type {operation_type}.")
         self.operation_type = operation_type
+
+        if status not in ORDER_OPERATION_STATUSES:
+            raise ValueError(f"Unsupported order status type {operation_type}.")
+        self.status
