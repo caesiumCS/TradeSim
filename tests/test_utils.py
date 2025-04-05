@@ -1,8 +1,11 @@
 import pytest
 
-from trade_simulator.utils.utils import (check_amm_settings,
-                                         check_pool_tokens_settings,
-                                         check_pools_settings, read_settings)
+from trade_simulator.utils.utils import (
+    check_amm_settings,
+    check_pool_tokens_settings,
+    check_pools_settings,
+    read_settings,
+)
 
 
 def test_check_amm_settings():
@@ -55,3 +58,32 @@ def test_check_pool_tokens_settings():
         check_pool_tokens_settings(settings, pool_id)
     settings[0]["name"] = "name2"
     check_pool_tokens_settings(settings, pool_id)
+
+
+def test_check_pool_settings():
+    pools_settings = {"pools": [{"id": 1}]}
+    with pytest.raises(
+        ValueError,
+        match="Expecting parameter 'steps_to_check_orderbook' in pool settings.",
+    ):
+        check_pools_settings(pools_settings)
+    pools_settings["pools"][0]["steps_to_check_orderbook"] = 0
+    with pytest.raises(
+        ValueError,
+        match="Parameter 'steps_to_check_orderbook' has to be more or equal to 1, got 0.",
+    ):
+        check_pools_settings(pools_settings)
+    pools_settings["pools"][0]["steps_to_check_orderbook"] = 5
+
+    with pytest.raises(
+        ValueError,
+        match="Expecting parameter 'step_to_start_simulation' in pool settings.",
+    ):
+        check_pools_settings(pools_settings)
+    pools_settings["pools"][0]["step_to_start_simulation"] = -1
+    with pytest.raises(
+        ValueError,
+        match="Parameter 'steps_to_check_orderbook' has to be more or equal to 0, got -1.",
+    ):
+        check_pools_settings(pools_settings)
+    pools_settings["pools"][0]["step_to_start_simulation"] = 5

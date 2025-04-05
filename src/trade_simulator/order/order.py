@@ -1,7 +1,6 @@
 from typing import Optional
 
-from trade_simulator.utils.consts import (ORDER_OPERATION_STATUSES,
-                                          ORDER_OPERATION_TYPES)
+from trade_simulator.utils.consts import ORDER_OPERATION_STATUSES, ORDER_OPERATION_TYPES
 
 
 class Order:
