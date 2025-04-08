@@ -24,10 +24,12 @@ simulation:
   agents_settings:
     agents_batches:
       - number_of_agents: 50
-        agent_type: SinglePoolRandomTrader
+        agent_type: SinglePoolFoolishRandomTrader
+
         agent_settings:
           pool_id: 1
           steps_to_make_new_transaction: 10
+          probability_to_make_order: 0.5
           portfolio:
             - name: USDT
               quantity: 100
