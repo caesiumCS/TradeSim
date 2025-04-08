@@ -20,3 +20,17 @@ simulation:
             start_quantity: 1000
           - name: DOGE
             start_quantity: 1000
+
+  agents_settings:
+    agents_batches:
+      - number_of_agents: 50
+        agent_type: SinglePoolRandomTrader
+        agent_settings:
+          pool_id: 1
+          steps_to_make_new_transaction: 10
+          portfolio:
+            - name: USDT
+              quantity: 100
+            - name: DOGE
+              quantity: 100
+
