@@ -27,6 +27,9 @@ class Simulation:
     def create_agents(self, agents_settings: Dict[str, Any]):
         pass
 
+    def generate_agents_batch(self, agents_batche_settings):
+        pass
+
     def prepare_experiment_environment(self):
         experiment_id = self.simulation_meta_args["experiment_id"]
         experiment_name = self.simulation_meta_args["experiment_name"]

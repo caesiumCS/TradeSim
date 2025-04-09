@@ -15,6 +15,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         self.last_action_timestamp = 0
         self.pool_id = [kwargs["pool_id"]]
         self.probability_to_make_order = kwargs["probability_to_make_order"]
+        self.pool = None
 
     def run_agent_action(self, timestamp: int):
         if timestamp - self.last_action_timestamp >= self.steps_to_make_new_transaction:
@@ -31,14 +32,17 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
     def make_order(self, timestamp: int):
         if not self.make_order_decision():
             return
-        self.last_action_timestamp = timestamp
         operation_type = random.choice("BUY", "SELL")
         token = random.choice(list(self.portfolio.keys()))
+        token_volume = random.choice(list(range(1, self.portfolio[token] + 1)))
+        token_volume = 0 if self.portfolio[token] == 0 else token_volume
         order = Order(
             trader=self,
             creation_timestamp=timestamp,
             operation_type=operation_type,
             token=token,
+            token_volume=token_volume,
             priority=1, # lowest priority
-            # TODO - continue here
         )
+        self.last_action_timestamp = timestamp
+        self.pool.add_order(order)
