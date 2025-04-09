@@ -4,6 +4,8 @@ from typing import Any, Dict
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.utils import check_pools_settings
 
+from trade_simulator.agents.single_pool_foolish_random_trader import SinglePoolFoolishRandomTrader
+
 
 class Simulation:
     def __init__(self, **kwargs):
@@ -12,6 +14,8 @@ class Simulation:
 
         self.prepare_experiment_environment()
         self.create_pools()
+
+        self.agents = []
 
     def run(self):
         pass
@@ -25,10 +29,18 @@ class Simulation:
         self.pools = pools
 
     def create_agents(self, agents_settings: Dict[str, Any]):
-        pass
+        if "agents_batches" in agents_settings:
+            for batch in agents_settings["agents_batches"]:
+                self.generate_agents_batch(batch)
 
     def generate_agents_batch(self, agents_batche_settings):
-        pass
+        # TODO - need a class, that will build agents by configs
+        agent_type = agents_batche_settings["agent_type"]
+        agent_settings = agents_batche_settings["agent_settings"]
+        for _ in agents_batche_settings["number_of_agents"]:
+            if agent_type == "SinglePoolFoolishRandomTrader":
+                agent = SinglePoolFoolishRandomTrader(**agent_settings)
+                agent.pool = self.pools[agent_settings["pool_id"]]
 
     def prepare_experiment_environment(self):
         experiment_id = self.simulation_meta_args["experiment_id"]
