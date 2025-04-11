@@ -19,13 +19,13 @@ simulation:
 
         tokens:
           - name: USDT
-            start_quantity: 1_000_000
+            start_quantity: 1_000
           - name: DOGE
-            start_quantity: 1_000_000
+            start_quantity: 200
 
   agents_settings:
     agents_batches:
-      - number_of_agents: 1
+      - number_of_agents: 100
         agent_type: SinglePoolFoolishRandomTrader
 
         agent_settings:

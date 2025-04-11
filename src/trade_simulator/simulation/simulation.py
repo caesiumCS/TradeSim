@@ -1,7 +1,7 @@
 import os
-from typing import Any, Dict
 from tqdm import tqdm
 import random
+import json
 
 from trade_simulator.agents.single_pool_foolish_random_trader import (
     SinglePoolFoolishRandomTrader,
@@ -29,8 +29,8 @@ class Simulation:
             for agent in self.agents:
                 agent.run_agent_action(step)
 
-        print(len(self.agents))
-        print(self.pools[1].metrics["total_number_of_unique_orders"])
+        with open('pool_2.json', 'w') as f:
+            json.dump(self.pools[1].metrics, f)
 
     def create_pools(self):
         pools_settings = self.simulation_build_args["pools_settings"]
