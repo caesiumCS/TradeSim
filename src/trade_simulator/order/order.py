@@ -34,4 +34,4 @@ class Order:
 
         if status not in ORDER_OPERATION_STATUSES:
             raise ValueError(f"Unsupported order status type {operation_type}.")
-        self.status
+        self.status = status

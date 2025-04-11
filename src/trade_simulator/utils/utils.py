@@ -75,5 +75,5 @@ def check_pools_settings(pools_settings: Dict[str, Any]):
             raise ValueError(f"Pool  is expected " "to have an 'amm_settings' field.")
         if settings.get("tokens") is None:
             raise ValueError(f"Pool with id: {pool_id} require 'tokens' field.")
-        check_pool_tokens_settings(settings["tokens"])
+        check_pool_tokens_settings(settings["tokens"], pool_id)
         check_amm_settings(settings["amm_settings"], settings)

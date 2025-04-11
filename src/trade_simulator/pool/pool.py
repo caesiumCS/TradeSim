@@ -21,7 +21,12 @@ class Pool:
         self.metrics = {
             "total_number_of_unique_orders": 0,
             "number_of_orders_in_order_book": [],
+            "portfolio": {},
         }
+
+        for token in self.tokens_info.keys():
+            self.metrics["portfolio"][token] = []
+
         for status in ORDER_OPERATION_STATUSES:
             self.metrics[f"number_of_{status}_orders_in_order_book"] = []
 
@@ -45,7 +50,9 @@ class Pool:
             self.amm_agent.execute_orders()
             self.last_timestamp_to_check_orderbook = timestamp
         self.amm_agent.clean_order_book()
+        for token in self.tokens_info.keys():
+            self.metrics["portfolio"][token].append(self.tokens_info[token])
 
     def add_order(self, order: Order):
         self.order_book.append(order)
-        self.metrics["total_number_of_orders"] += 1
+        self.metrics["total_number_of_unique_orders"] += 1

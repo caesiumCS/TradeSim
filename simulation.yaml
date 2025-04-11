@@ -5,6 +5,8 @@ meta_info:
   experiment_name: "Test run for development"
 
 simulation:
+  steps_of_simulation: 1000
+
   pools_settings:
     pools:
       - id: 1
@@ -17,13 +19,13 @@ simulation:
 
         tokens:
           - name: USDT
-            start_quantity: 1000
+            start_quantity: 1_000_000
           - name: DOGE
-            start_quantity: 1000
+            start_quantity: 1_000_000
 
   agents_settings:
     agents_batches:
-      - number_of_agents: 50
+      - number_of_agents: 1
         agent_type: SinglePoolFoolishRandomTrader
 
         agent_settings:

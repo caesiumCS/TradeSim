@@ -46,15 +46,15 @@ class UniswapAMM(AMM):
                 if token_to_sell != token:
                     other_token = token
 
-            tokens_to_buy = self.pool.tokens_info[other_token] - (
-                self.k / (self.pool.tokens_info[token_to_buy] + order.token_volume)
+            token_to_sell_volume = self.pool.tokens_info[other_token] - (
+                self.k / (self.pool.tokens_info[token_to_sell] + order.token_volume)
             )
 
             if order.trader.portfolio[token_to_sell] < order.token_volume:
                 order.status = "Canceled"
                 return
-            order.trader.portfolio[other_token] += tokens_to_buy
-            self.pool.tokens_info[other_token] -= tokens_to_buy
+            order.trader.portfolio[other_token] += token_to_sell_volume
+            self.pool.tokens_info[other_token] -= token_to_sell_volume
             order.trader.portfolio[token_to_sell] -= order.token_volume
             self.pool.tokens_info[token_to_sell] += order.token_volume
             order.status = "Succeed"
