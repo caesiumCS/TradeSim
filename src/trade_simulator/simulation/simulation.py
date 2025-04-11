@@ -1,10 +1,10 @@
 import os
 from typing import Any, Dict
 
+from trade_simulator.agents.single_pool_foolish_random_trader import \
+    SinglePoolFoolishRandomTrader
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.utils import check_pools_settings
-
-from trade_simulator.agents.single_pool_foolish_random_trader import SinglePoolFoolishRandomTrader
 
 
 class Simulation:
@@ -34,13 +34,17 @@ class Simulation:
                 self.generate_agents_batch(batch)
 
     def generate_agents_batch(self, agents_batche_settings):
-        # TODO - need a class, that will build agents by configs
         agent_type = agents_batche_settings["agent_type"]
         agent_settings = agents_batche_settings["agent_settings"]
         for _ in agents_batche_settings["number_of_agents"]:
             if agent_type == "SinglePoolFoolishRandomTrader":
                 agent = SinglePoolFoolishRandomTrader(**agent_settings)
+                agent.pools = {
+                    agent_settings["pool_id"]: self.pools[agent_settings["pool_id"]]
+                }
                 agent.pool = self.pools[agent_settings["pool_id"]]
+            else:
+                raise ValueError(f"Unknown agent type {agent_type}.")
 
     def prepare_experiment_environment(self):
         experiment_id = self.simulation_meta_args["experiment_id"]

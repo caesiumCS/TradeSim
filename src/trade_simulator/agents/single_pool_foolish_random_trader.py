@@ -1,6 +1,7 @@
+import random
+
 from trade_simulator.agents.basic_agent import BasicAgent
 from trade_simulator.order.order import Order
-import random
 
 
 class SinglePoolFoolishRandomTrader(BasicAgent):
@@ -42,7 +43,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
             operation_type=operation_type,
             token=token,
             token_volume=token_volume,
-            priority=1, # lowest priority
+            priority=1,  # lowest priority
         )
         self.last_action_timestamp = timestamp
         self.pool.add_order(order)
