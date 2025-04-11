@@ -1,8 +1,9 @@
 import os
 from typing import Any, Dict
 
-from trade_simulator.agents.single_pool_foolish_random_trader import \
-    SinglePoolFoolishRandomTrader
+from trade_simulator.agents.single_pool_foolish_random_trader import (
+    SinglePoolFoolishRandomTrader,
+)
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.utils import check_pools_settings
 

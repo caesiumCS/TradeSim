@@ -22,6 +22,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         if timestamp - self.last_action_timestamp >= self.steps_to_make_new_transaction:
             self.make_order(timestamp)
 
+    # TODO - move to abc class
     def parse_portfolio(self, input_portfolio):
         self.portfolio = {}
         for el in input_portfolio:
