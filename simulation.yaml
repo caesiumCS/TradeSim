@@ -5,7 +5,7 @@ meta_info:
   experiment_name: "Test run for development"
 
 simulation:
-  steps_of_simulation: 1000
+  steps_of_simulation: 10_000
 
   pools_settings:
     pools:

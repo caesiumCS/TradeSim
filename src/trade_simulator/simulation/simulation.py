@@ -29,7 +29,7 @@ class Simulation:
             for agent in self.agents:
                 agent.run_agent_action(step)
 
-        with open('pool_2.json', 'w') as f:
+        with open('pool_3.json', 'w') as f:
             json.dump(self.pools[1].metrics, f)
 
     def create_pools(self):
