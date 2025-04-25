@@ -36,7 +36,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
             return
         operation_type = random.choice(["BUY", "SELL"])
         token = random.choice(list(self.portfolio.keys()))
-        token_volume = random.choice([1,2,3])
+        token_volume = random.choice([1, 2, 3])
         token_volume = 0 if self.portfolio[token] == 0 else token_volume
         order = Order(
             trader=self,

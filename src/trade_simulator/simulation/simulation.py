@@ -20,7 +20,6 @@ class Simulation:
         self.create_pools()
         self.create_agents()
 
-
     def run(self):
         for step in tqdm(range(self.steps)):
             for pool_id in self.pools.keys():
@@ -29,7 +28,7 @@ class Simulation:
             for agent in self.agents:
                 agent.run_agent_action(step)
 
-        with open('pool_3.json', 'w') as f:
+        with open("pool_3.json", "w") as f:
             json.dump(self.pools[1].metrics, f)
 
     def create_pools(self):

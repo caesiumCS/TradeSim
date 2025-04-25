@@ -15,15 +15,15 @@ simulation:
         step_to_start_simulation: 0
 
         amm_settings:
-          type: Mariana
+          type: Uniswap
 
         tokens:
-          - name: VEGA
-            start_quantity: 2000
+          # - name: VEGA
+          #   start_quantity: 2000
           - name: USDT
-            start_quantity: 2000
+            start_quantity: 10_000
           - name: DOGE
-            start_quantity: 2000
+            start_quantity: 10_000
 
   agents_settings:
     agents_batches:
@@ -39,6 +39,6 @@ simulation:
               quantity: 100
             - name: DOGE
               quantity: 100
-            - name: VEGA
-              quantity: 100
+            # - name: VEGA
+            #   quantity: 0
 
