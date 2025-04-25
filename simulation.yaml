@@ -5,7 +5,7 @@ meta_info:
   experiment_name: "Test run for development"
 
 simulation:
-  steps_of_simulation: 10_000
+  steps_of_simulation: 4000
 
   pools_settings:
     pools:
@@ -15,13 +15,15 @@ simulation:
         step_to_start_simulation: 0
 
         amm_settings:
-          type: Uniswap
+          type: Mariana
 
         tokens:
+          - name: VEGA
+            start_quantity: 2000
           - name: USDT
-            start_quantity: 1_000
+            start_quantity: 2000
           - name: DOGE
-            start_quantity: 200
+            start_quantity: 2000
 
   agents_settings:
     agents_batches:
@@ -36,5 +38,7 @@ simulation:
             - name: USDT
               quantity: 100
             - name: DOGE
+              quantity: 100
+            - name: VEGA
               quantity: 100
 

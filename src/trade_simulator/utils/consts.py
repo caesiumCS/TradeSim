@@ -1,5 +1,6 @@
 AMM_TYPES = [
     "Uniswap",
+    "Mariana",
 ]
 
 ORDER_OPERATION_TYPES = [
