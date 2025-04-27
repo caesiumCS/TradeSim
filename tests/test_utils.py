@@ -1,11 +1,8 @@
 import pytest
 
-from trade_simulator.utils.utils import (
-    check_amm_settings,
-    check_pool_tokens_settings,
-    check_pools_settings,
-    read_settings,
-)
+from trade_simulator.utils.utils import (check_amm_settings,
+                                         check_pool_tokens_settings,
+                                         check_pools_settings, read_settings)
 
 
 def test_check_amm_settings():

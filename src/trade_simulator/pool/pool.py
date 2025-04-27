@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Union
 
 from trade_simulator.amm_agents.basic_amm import AMM
-from trade_simulator.amm_agents.uniswap_amm import UniswapAMM
 from trade_simulator.amm_agents.mariana_amm import MarianaAMM
+from trade_simulator.amm_agents.uniswap_amm import UniswapAMM
 from trade_simulator.order.order import Order
 from trade_simulator.utils.consts import ORDER_OPERATION_STATUSES
 

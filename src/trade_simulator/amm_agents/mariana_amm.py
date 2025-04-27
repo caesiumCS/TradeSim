@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING
-import random
 import math
+import random
+from typing import TYPE_CHECKING
 
 from trade_simulator.amm_agents.basic_amm import AMM
 

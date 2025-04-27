@@ -1,11 +1,11 @@
-import os
-from tqdm import tqdm
-import random
 import json
+import os
+import random
 
-from trade_simulator.agents.single_pool_foolish_random_trader import (
-    SinglePoolFoolishRandomTrader,
-)
+from tqdm import tqdm
+
+from trade_simulator.agents.single_pool_foolish_random_trader import \
+    SinglePoolFoolishRandomTrader
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.utils import check_pools_settings
 
