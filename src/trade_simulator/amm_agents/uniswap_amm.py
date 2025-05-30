@@ -57,6 +57,7 @@ class UniswapAMM(AMM):
             order.status = "Canceled"
             return
 
+
         order.trader.portfolio[token_to_sell] -= order.token_volume
         order.trader.portfolio[other_token] += tokens_to_receive
 
