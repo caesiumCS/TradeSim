@@ -1,6 +1,4 @@
 from abc import ABC, abstractmethod
-import random
-import string
 
 
 class BasicAgent(ABC):
