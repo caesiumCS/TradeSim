@@ -5,10 +5,15 @@ import shutil
 
 from tqdm import tqdm
 
-from trade_simulator.agents.single_pool_foolish_random_trader import \
-    SinglePoolFoolishRandomTrader
+from trade_simulator.agents.single_pool_foolish_random_trader import (
+    SinglePoolFoolishRandomTrader,
+)
 from trade_simulator.pool.pool import Pool
-from trade_simulator.utils.plots import plot_pool_balace, plot_uniswapv2_k, plot_agent_balance
+from trade_simulator.utils.plots import (
+    plot_pool_balace,
+    plot_uniswapv2_k,
+    plot_agent_balance,
+)
 from trade_simulator.utils.utils import check_pools_settings
 
 

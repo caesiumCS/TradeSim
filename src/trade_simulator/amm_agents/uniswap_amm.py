@@ -16,10 +16,9 @@ class UniswapAMM(AMM):
         self.type = "UniswapV2"
         self.token_a, self.token_b = tokens
         self.pool.metrics["k"] = []
-        self.k = (
+        self.pool.metrics["k"].append(
             self.pool.tokens_info[self.token_a] * self.pool.tokens_info[self.token_b]
         )
-        self.pool.metrics["k"].append(self.k)
 
     def _get_other_token(self, token: str) -> str:
         """

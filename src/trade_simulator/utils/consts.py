@@ -13,3 +13,8 @@ ORDER_OPERATION_STATUSES = [
     "Succeed",
     "Canceled",
 ]
+
+ORDER_TYPES = [
+    "Market",
+    "Limit",
+]

@@ -29,6 +29,7 @@ def plot_uniswapv2_k(pool: Pool, folder_path: str):
     )
     plt.close()
 
+
 def plot_agent_balance(agent, folder_path: str):
     plt.figure(figsize=(15, 6))
     plt.grid()
