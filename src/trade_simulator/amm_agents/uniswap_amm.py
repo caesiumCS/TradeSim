@@ -13,6 +13,7 @@ class UniswapAMM(AMM):
         super().__init__(pool, **kwargs)
 
         tokens = list(self.pool.tokens_info.keys())
+        self.type = "UniswapV2"
         self.token_a, self.token_b = tokens
         self.pool.metrics["k"] = []
         self.k = (

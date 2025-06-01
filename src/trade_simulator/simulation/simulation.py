@@ -99,4 +99,5 @@ class Simulation:
 
     def generate_metrics_by_pool(self, pool: Pool):
         plot_pool_balace(pool, self.experiment_logs_path)
-        plot_uniswapv2_k(pool, self.experiment_logs_path)
+        if pool.amm_agent.type == "UniswapV2":
+            plot_uniswapv2_k(pool, self.experiment_logs_path)

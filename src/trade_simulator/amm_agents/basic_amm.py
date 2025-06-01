@@ -12,6 +12,7 @@ class AMM(ABC):
     def __init__(self, pool: "Pool", **kwargs):
         self.pool = pool
         self.settings = kwargs
+        self.type = None
 
         self.fee = 0.0 if "fee" not in self.settings else self.settings["fee"]
 
