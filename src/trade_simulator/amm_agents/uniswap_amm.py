@@ -14,61 +14,85 @@ class UniswapAMM(AMM):
 
         tokens = list(self.pool.tokens_info.keys())
         self.token_a, self.token_b = tokens
+        self.pool.metrics["k"] = []
         self.k = (
             self.pool.tokens_info[self.token_a] * self.pool.tokens_info[self.token_b]
         )
+        self.pool.metrics["k"].append(self.k)
 
     def _get_other_token(self, token: str) -> str:
+        """
+        Возвращает другой токен в пуле, кроме указанного.
+        UniswapV2 предполагает, что в пуле только два токена.
+        :param token: Токен, для которого нужно найти другой токен.
+        :return: Другой токен в пуле.
+        """
         return self.token_b if token == self.token_a else self.token_a
 
     def buy(self, order: "Order"):
-        token_to_buy = order.token
-        other_token = self._get_other_token(token_to_buy)
+        token_out = order.token  # токен, который трейдер хочет получить
+        token_in = self._get_other_token(token_out)
 
-        new_token_balance = self.pool.tokens_info[token_to_buy] - order.token_volume
-        if new_token_balance <= 0:
+        x = self.pool.tokens_info[token_in]
+        y = self.pool.tokens_info[token_out]
+        dy = order.token_volume
+
+        if dy >= y:
             order.status = "Canceled"
             return
 
-        tokens_to_sell = (self.k / new_token_balance) - self.pool.tokens_info[
-            other_token
-        ]
+        # Расчёт dx: сколько нужно заплатить с учётом комиссии
+        new_y = y - dy
+        k = x * y
+        new_x = k / new_y
+        dx_without_fee = new_x - x
+        dx = dx_without_fee / (1 - self.fee)
 
-        if order.trader.portfolio[other_token] < tokens_to_sell:
+        if order.trader.portfolio[token_in] < dx:
             order.status = "Canceled"
             return
 
-        order.trader.portfolio[other_token] -= tokens_to_sell
-        order.trader.portfolio[token_to_buy] += order.token_volume
+        # Обновление портфеля и пула
+        order.trader.portfolio[token_in] -= dx
+        order.trader.portfolio[token_out] += dy
 
-        self.pool.tokens_info[other_token] += tokens_to_sell
-        self.pool.tokens_info[token_to_buy] -= order.token_volume
+        self.pool.tokens_info[token_in] += dx
+        self.pool.tokens_info[token_out] -= dy
 
+        self.pool.metrics["k"].append(k)
         order.status = "Succeed"
 
     def sell(self, order: "Order"):
-        token_to_sell = order.token
-        other_token = self._get_other_token(token_to_sell)
+        token_in = order.token  # токен, который трейдер продаёт
+        token_out = self._get_other_token(token_in)
 
-        new_token_balance = self.pool.tokens_info[token_to_sell] + order.token_volume
-        if new_token_balance <= 0:
+        dx = order.token_volume
+        if order.trader.portfolio[token_in] < dx:
             order.status = "Canceled"
             return
 
-        tokens_to_receive = self.pool.tokens_info[other_token] - (
-            self.k / new_token_balance
-        )
+        x = self.pool.tokens_info[token_in]
+        y = self.pool.tokens_info[token_out]
 
-        if order.trader.portfolio[token_to_sell] < order.token_volume:
+        # Учёт комиссии
+        dx_with_fee = dx * (1 - self.fee)
+        new_x = x + dx_with_fee
+        k = x * y
+        new_y = k / new_x
+        dy = y - new_y
+
+        if dy > y:
             order.status = "Canceled"
             return
 
-        order.trader.portfolio[token_to_sell] -= order.token_volume
-        order.trader.portfolio[other_token] += tokens_to_receive
+        # Обновление портфеля и пула
+        order.trader.portfolio[token_in] -= dx
+        order.trader.portfolio[token_out] += dy
 
-        self.pool.tokens_info[token_to_sell] += order.token_volume
-        self.pool.tokens_info[other_token] -= tokens_to_receive
+        self.pool.tokens_info[token_in] += dx
+        self.pool.tokens_info[token_out] -= dy
 
+        self.pool.metrics["k"].append(k)
         order.status = "Succeed"
 
     def execute_order(self, order: "Order"):

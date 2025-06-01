@@ -15,8 +15,6 @@ class Pool:
         self.last_timestamp_to_check_orderbook = kwargs["step_to_start_simulation"]
 
         self.tokens_info = self.create_tokens_pool(kwargs["tokens"])
-        self.amm_agent = self.generate_amm(kwargs["amm_settings"])
-
         self.order_book: List[Order] = []
 
         self.metrics = {
@@ -24,6 +22,7 @@ class Pool:
             "number_of_orders_in_order_book": [],
             "portfolio": {},
         }
+        self.amm_agent = self.generate_amm(kwargs["amm_settings"])
 
         for token in self.tokens_info.keys():
             self.metrics["portfolio"][token] = []

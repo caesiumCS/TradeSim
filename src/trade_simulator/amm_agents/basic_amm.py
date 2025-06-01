@@ -15,7 +15,6 @@ class AMM(ABC):
 
         self.fee = 0.0 if "fee" not in self.settings else self.settings["fee"]
 
-
     @abstractmethod
     def execute_order(self, order: "Order"):
         pass

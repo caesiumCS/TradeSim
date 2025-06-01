@@ -5,12 +5,11 @@ import shutil
 
 from tqdm import tqdm
 
-from trade_simulator.agents.single_pool_foolish_random_trader import (
-    SinglePoolFoolishRandomTrader,
-)
+from trade_simulator.agents.single_pool_foolish_random_trader import \
+    SinglePoolFoolishRandomTrader
 from trade_simulator.pool.pool import Pool
+from trade_simulator.utils.plots import plot_pool_balace, plot_uniswapv2_k
 from trade_simulator.utils.utils import check_pools_settings
-from trade_simulator.utils.plots import plot_pool_balace
 
 
 class Simulation:
@@ -100,3 +99,4 @@ class Simulation:
 
     def generate_metrics_by_pool(self, pool: Pool):
         plot_pool_balace(pool, self.experiment_logs_path)
+        plot_uniswapv2_k(pool, self.experiment_logs_path)
