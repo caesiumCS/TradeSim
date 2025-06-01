@@ -7,6 +7,7 @@ class BasicAgent(ABC):
     def __init__(self, **kwargs):
         # TODO - add basic kwargs checker
         self.id = None
+        self.type = None
         self.pools = {}
         self.metrics = {
             "portfolio": {},

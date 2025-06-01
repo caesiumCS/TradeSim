@@ -10,8 +10,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         super().__init__(**kwargs)
         # TODO - check input parameters
 
-        self.trader_type = "SinglePoolFoolishRandomTrader"
-        
+        self.type = "SinglePoolFoolishRandomTrader"
         self.steps_to_make_new_transaction = kwargs["steps_to_make_new_transaction"]
         self.last_action_timestamp = 0
         self.pool_id = [kwargs["pool_id"]]

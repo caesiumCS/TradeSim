@@ -8,7 +8,7 @@ from tqdm import tqdm
 from trade_simulator.agents.single_pool_foolish_random_trader import \
     SinglePoolFoolishRandomTrader
 from trade_simulator.pool.pool import Pool
-from trade_simulator.utils.plots import plot_pool_balace, plot_uniswapv2_k
+from trade_simulator.utils.plots import plot_pool_balace, plot_uniswapv2_k, plot_agent_balance
 from trade_simulator.utils.utils import check_pools_settings
 
 
@@ -34,6 +34,11 @@ class Simulation:
         self.save_raw_agents_data()
         for pool in self.pools.values():
             self.generate_metrics_by_pool(pool)
+        path = f"{self.experiment_logs_path}/agents_metrics"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        for agent in self.agents:
+            self.generate_metrics_by_agent(agent)
 
     def create_pools(self):
         pools_settings = self.simulation_build_args["pools_settings"]
@@ -70,7 +75,7 @@ class Simulation:
         for i, agent in enumerate(self.agents):
             agent.id = i
             agent.metrics["id"] = i
-            agent.metrics["trader_type"] = agent.trader_type
+            agent.metrics["type"] = agent.type
 
     def prepare_experiment_environment(self, delete_existing_folder: bool = True):
         experiment_id = self.simulation_meta_args["experiment_id"]
@@ -113,10 +118,19 @@ class Simulation:
         if not os.path.exists(path):
             os.makedirs(path)
         for agent in self.agents:
-            with open(f"{path}/{agent.trader_type}_{agent.id}.json", "w") as f:
+            with open(f"{path}/{agent.type}_{agent.id}.json", "w") as f:
                 json.dump(agent.metrics, f)
 
     def generate_metrics_by_pool(self, pool: Pool):
-        plot_pool_balace(pool, self.experiment_logs_path)
+        path = f"{self.experiment_logs_path}/pool_{pool.id}_metrics"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        plot_pool_balace(pool, path)
         if pool.amm_agent.type == "UniswapV2":
-            plot_uniswapv2_k(pool, self.experiment_logs_path)
+            plot_uniswapv2_k(pool, path)
+
+    def generate_metrics_by_agent(self, agent):
+        path = f"{self.experiment_logs_path}/agents_metrics/{agent.type}_{agent.id}_metrics"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        plot_agent_balance(agent, path)
