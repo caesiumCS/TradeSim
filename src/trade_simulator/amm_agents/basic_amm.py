@@ -24,6 +24,10 @@ class AMM(ABC):
     def sort_orders(self):
         pass
 
+    @abstractmethod
+    def write_metrics(self):
+        pass
+
     def clean_order_book(self):
         orders_to_statuses = {}
         for status in ORDER_OPERATION_STATUSES:

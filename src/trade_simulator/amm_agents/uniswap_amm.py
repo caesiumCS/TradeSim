@@ -20,6 +20,11 @@ class UniswapAMM(AMM):
             self.pool.tokens_info[self.token_a] * self.pool.tokens_info[self.token_b]
         )
 
+    def write_metrics(self):
+        self.pool.metrics["k"].append(
+            self.pool.tokens_info[self.token_a] * self.pool.tokens_info[self.token_b]
+        )
+
     def _get_other_token(self, token: str) -> str:
         """
         Возвращает другой токен в пуле, кроме указанного.
@@ -59,7 +64,6 @@ class UniswapAMM(AMM):
         self.pool.tokens_info[token_in] += dx
         self.pool.tokens_info[token_out] -= dy
 
-        self.pool.metrics["k"].append(k)
         order.status = "Succeed"
 
     def sell(self, order: "Order"):
@@ -92,7 +96,6 @@ class UniswapAMM(AMM):
         self.pool.tokens_info[token_in] += dx
         self.pool.tokens_info[token_out] -= dy
 
-        self.pool.metrics["k"].append(k)
         order.status = "Succeed"
 
     def execute_order(self, order: "Order"):

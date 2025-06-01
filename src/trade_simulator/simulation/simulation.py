@@ -34,6 +34,8 @@ class Simulation:
             random.shuffle(self.agents)
             for agent in self.agents:
                 agent.run_agent_action(step)
+            for pool in self.pools.values():
+                pool.amm_agent.write_metrics()
 
         self.save_raw_pools_data()
         self.save_raw_agents_data()
