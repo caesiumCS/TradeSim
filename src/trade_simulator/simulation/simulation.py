@@ -5,8 +5,9 @@ import shutil
 
 from tqdm import tqdm
 
-from trade_simulator.agents.single_pool_foolish_random_trader import \
-    SinglePoolFoolishRandomTrader
+from trade_simulator.agents.single_pool_foolish_random_trader import (
+    SinglePoolFoolishRandomTrader,
+)
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.utils import check_pools_settings
 
@@ -30,7 +31,6 @@ class Simulation:
                 agent.run_agent_action(step)
 
         self.save_raw_pools_data()
-
 
     def create_pools(self):
         pools_settings = self.simulation_build_args["pools_settings"]
