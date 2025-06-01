@@ -109,9 +109,3 @@ class UniswapAMM(AMM):
                 self._sell_market(order)
         else:
             raise ValueError(f"Unsupported order type {order.order_type}.")
-
-    def sort_orders(self):
-        random.shuffle(self.pool.order_book)
-        self.pool.order_book = sorted(
-            self.pool.order_book, key=lambda o: (o.creation_timestamp, o.priority)
-        )

@@ -1,3 +1,4 @@
+import random
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -20,9 +21,12 @@ class AMM(ABC):
     def execute_order(self, order: "Order"):
         pass
 
-    @abstractmethod
     def sort_orders(self):
-        pass
+        # Перемешиваем для рандомного порядка среди ордеров с одинаковым временем и приоритетом
+        random.shuffle(self.pool.order_book)
+        self.pool.order_book = sorted(
+            self.pool.order_book, key=lambda o: (o.creation_timestamp, o.priority)
+        )
 
     @abstractmethod
     def write_metrics(self):
