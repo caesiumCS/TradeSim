@@ -34,7 +34,7 @@ class UniswapAMM(AMM):
         """
         return self.token_b if token == self.token_a else self.token_a
 
-    def buy(self, order: "Order"):
+    def _buy_market(self, order: "Order"):
         token_out = order.token  # токен, который трейдер хочет получить
         token_in = self._get_other_token(token_out)
 
@@ -66,7 +66,7 @@ class UniswapAMM(AMM):
 
         order.status = "Succeed"
 
-    def sell(self, order: "Order"):
+    def _sell_market(self, order: "Order"):
         token_in = order.token  # токен, который трейдер продаёт
         token_out = self._get_other_token(token_in)
 
@@ -102,10 +102,13 @@ class UniswapAMM(AMM):
         if order.status != "Awaiting":
             return
 
-        if order.operation_type == "BUY":
-            self.buy(order)
+        if order.order_type == "Market":
+            if order.operation_type == "BUY":
+                self._buy_market(order)
+            else:
+                self._sell_market(order)
         else:
-            self.sell(order)
+            raise ValueError(f"Unsupported order type {order.order_type}.")
 
     def sort_orders(self):
         random.shuffle(self.pool.order_book)
