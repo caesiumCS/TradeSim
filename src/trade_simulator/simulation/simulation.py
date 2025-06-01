@@ -8,6 +8,7 @@ from tqdm import tqdm
 from trade_simulator.agents.single_pool_foolish_random_trader import (
     SinglePoolFoolishRandomTrader,
 )
+from trade_simulator.agents.simple_market_maker import SimpleMarketMaker
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.plots import (
     plot_agent_balance,
@@ -66,19 +67,27 @@ class Simulation:
                 self.generate_agents_batch(batch)
         self.put_ids_to_agents()
 
+    def generate_agent(self, agent_type, agent_settings):
+        agent = None
+        if agent_type == "SinglePoolFoolishRandomTrader":
+            agent = SinglePoolFoolishRandomTrader(**agent_settings)
+            agent.pools = {
+                agent_settings["pool_id"]: self.pools[agent_settings["pool_id"]]
+            }
+            agent.pool = self.pools[agent_settings["pool_id"]]
+        elif agent_type == "SimpleMarketMaker":
+            agent = SimpleMarketMaker(**agent_settings)
+            for rule in agent.rules:
+                agent.pools[rule["pool_id"]] = self.pools[rule["pool_id"]]
+        else:
+            raise ValueError(f"Unknown agent type {agent_type}.")
+        return agent
+
     def generate_agents_batch(self, agents_batche_settings):
         agent_type = agents_batche_settings["agent_type"]
         agent_settings = agents_batche_settings["agent_settings"]
         for _ in range(agents_batche_settings["number_of_agents"]):
-            agent = None
-            if agent_type == "SinglePoolFoolishRandomTrader":
-                agent = SinglePoolFoolishRandomTrader(**agent_settings)
-                agent.pools = {
-                    agent_settings["pool_id"]: self.pools[agent_settings["pool_id"]]
-                }
-                agent.pool = self.pools[agent_settings["pool_id"]]
-            else:
-                raise ValueError(f"Unknown agent type {agent_type}.")
+            agent = self.generate_agent(agent_type, agent_settings)
             self.agents.append(agent)
 
     def put_ids_to_agents(self):
