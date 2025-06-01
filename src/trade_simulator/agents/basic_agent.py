@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
+import random
+import string
 
 
 class BasicAgent(ABC):
     def __init__(self, **kwargs):
         # TODO - add basic kwargs checker
+        self.id = None
         self.pools = {}
         self.metrics = {
             "portfolio": {},

@@ -17,6 +17,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         self.pool_id = [kwargs["pool_id"]]
         self.probability_to_make_order = kwargs["probability_to_make_order"]
         self.pool = None
+        self.metrics["pool_id"] = self.pool_id
 
     def run_agent_action(self, timestamp: int):
         if timestamp - self.last_action_timestamp >= self.steps_to_make_new_transaction:

@@ -31,6 +31,7 @@ class Simulation:
                 agent.run_agent_action(step)
 
         self.save_raw_pools_data()
+        self.save_raw_agents_data()
         for pool in self.pools.values():
             self.generate_metrics_by_pool(pool)
 
@@ -48,6 +49,7 @@ class Simulation:
         if "agents_batches" in agents_settings:
             for batch in agents_settings["agents_batches"]:
                 self.generate_agents_batch(batch)
+        self.put_ids_to_agents()
 
     def generate_agents_batch(self, agents_batche_settings):
         agent_type = agents_batche_settings["agent_type"]
@@ -63,6 +65,12 @@ class Simulation:
             else:
                 raise ValueError(f"Unknown agent type {agent_type}.")
             self.agents.append(agent)
+
+    def put_ids_to_agents(self):
+        for i, agent in enumerate(self.agents):
+            agent.id = i
+            agent.metrics["id"] = i
+            agent.metrics["trader_type"] = agent.trader_type
 
     def prepare_experiment_environment(self, delete_existing_folder: bool = True):
         experiment_id = self.simulation_meta_args["experiment_id"]
@@ -99,6 +107,14 @@ class Simulation:
         for pool_id, pool in self.pools.items():
             with open(f"{path}/pool_{pool_id}.json", "w") as f:
                 json.dump(pool.metrics, f)
+
+    def save_raw_agents_data(self):
+        path = f"{self.experiment_logs_path}/raw_agents_data"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        for agent in self.agents:
+            with open(f"{path}/{agent.trader_type}_{agent.id}.json", "w") as f:
+                json.dump(agent.metrics, f)
 
     def generate_metrics_by_pool(self, pool: Pool):
         plot_pool_balace(pool, self.experiment_logs_path)
