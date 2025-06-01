@@ -59,6 +59,3 @@ simulation:
               quantity: 100
             - name: DOGE
               quantity: 100
-            # - name: VEGA
-            #   quantity: 0
-

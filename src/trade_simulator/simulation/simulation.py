@@ -34,7 +34,7 @@ class Simulation:
                 self.pools[pool_id].execute_orders(step)
             random.shuffle(self.agents)
             for agent in self.agents:
-                agent.run_agent_action(step)
+                agent.complete_agent_action(step)
             for pool in self.pools.values():
                 pool.amm_agent.write_metrics()
         self.save_metrics_after_simulation()
@@ -65,6 +65,12 @@ class Simulation:
         if "agents_batches" in agents_settings:
             for batch in agents_settings["agents_batches"]:
                 self.generate_agents_batch(batch)
+        if "agents" in agents_settings:
+            for agent in agents_settings["agents"]:
+                agent_type = agent["agent_type"]
+                agent_settings = agent["agent_settings"]
+                agent = self.generate_agent(agent_type, agent_settings)
+                self.agents.append(agent)
         self.put_ids_to_agents()
 
     def generate_agent(self, agent_type, agent_settings):
@@ -78,6 +84,7 @@ class Simulation:
         elif agent_type == "SimpleMarketMaker":
             agent = SimpleMarketMaker(**agent_settings)
             for rule in agent.rules:
+                print(rule)
                 agent.pools[rule["pool_id"]] = self.pools[rule["pool_id"]]
         else:
             raise ValueError(f"Unknown agent type {agent_type}.")

@@ -16,6 +16,10 @@ class BasicAgent(ABC):
     def run_agent_action(self, timestamp: int):
         pass
 
+    def complete_agent_action(self, timestamp: int):
+        self.run_agent_action(timestamp)
+        self.update_metrics()
+
     def parse_portfolio(self, input_portfolio):
         self.portfolio = {}
         for el in input_portfolio:
