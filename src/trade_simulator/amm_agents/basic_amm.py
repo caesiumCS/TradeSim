@@ -78,3 +78,9 @@ class AMM(ABC):
             self.execute_order(order, timestamp)
             self.process_limit_orders(timestamp)
         self.clean_order_book()
+
+    @abstractmethod
+    def get_asset_price_in_currency(
+        self, token_as_asset, token_as_currency, amount_of_asset=1.0
+    ) -> float:
+        pass

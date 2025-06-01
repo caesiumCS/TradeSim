@@ -17,7 +17,7 @@ class Order:
         lifetime: Optional[int] = None,
         order_type: str = "Market",
         limit_price: Optional[float] = None,
-        token_to_get: Optional[str] = None,
+        second_token: Optional[str] = None,
     ):
         self.trader = trader
         self.creation_timestamp = creation_timestamp
@@ -30,7 +30,7 @@ class Order:
         self.status = "Awaiting"
         self.order_type = order_type
         self.limit_price = limit_price
-        self.token_to_get = token_to_get
+        self.second_token = second_token
         self.check_order_fields()
 
     def check_order_fields(self):

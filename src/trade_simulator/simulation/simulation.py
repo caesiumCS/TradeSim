@@ -5,15 +5,17 @@ import shutil
 
 from tqdm import tqdm
 
+from trade_simulator.agents.simple_market_maker import SimpleMarketMaker
 from trade_simulator.agents.single_pool_foolish_random_trader import (
     SinglePoolFoolishRandomTrader,
 )
-from trade_simulator.agents.simple_market_maker import SimpleMarketMaker
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.plots import (
     plot_agent_balance,
     plot_pool_balace,
     plot_uniswapv2_k,
+    plot_pair_balance,
+    plot_agent_portfolio_in_currency,
 )
 from trade_simulator.utils.utils import check_pools_settings
 
@@ -81,6 +83,8 @@ class Simulation:
                 agent_settings["pool_id"]: self.pools[agent_settings["pool_id"]]
             }
             agent.pool = self.pools[agent_settings["pool_id"]]
+            if agent.pool.amm_agent.type == "UniswapV2":
+                agent.metrics["budget_in_currency"] = []
         elif agent_type == "SimpleMarketMaker":
             agent = SimpleMarketMaker(**agent_settings)
             for rule in agent.rules:
@@ -156,9 +160,12 @@ class Simulation:
         plot_pool_balace(pool, path)
         if pool.amm_agent.type == "UniswapV2":
             plot_uniswapv2_k(pool, path)
+            plot_pair_balance(pool, path)
 
     def generate_metrics_by_agent(self, agent):
         path = f"{self.experiment_logs_path}/agents_metrics/{agent.type}_{agent.id}_metrics"
         if not os.path.exists(path):
             os.makedirs(path)
         plot_agent_balance(agent, path)
+        if "budget_in_currency" in agent.metrics:
+            plot_agent_portfolio_in_currency(agent, path)

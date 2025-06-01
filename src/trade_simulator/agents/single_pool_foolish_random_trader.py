@@ -17,11 +17,11 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         self.probability_to_make_order = kwargs["probability_to_make_order"]
         self.pool = None
         self.metrics["pool_id"] = self.pool_id
+        self.token_as_currency = kwargs["token_as_currency"]
 
     def run_agent_action(self, timestamp: int):
         if timestamp - self.last_action_timestamp >= self.steps_to_make_new_transaction:
             self.make_order(timestamp)
-        self.update_metrics()
 
     def make_order_decision(self) -> bool:
         return random.random() < self.probability_to_make_order
@@ -43,3 +43,34 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         )
         self.last_action_timestamp = timestamp
         self.pool.add_order(order)
+
+    def update_metrics(self):
+        for token in self.portfolio.keys():
+            self.metrics["portfolio"][token].append(self.portfolio[token])
+
+        if self.pool.amm_agent.type == "UniswapV2":
+            other_token = self.pool.amm_agent._get_other_token(self.token_as_currency)
+            current_asset_price_in_currency = (
+                self.pool.amm_agent.get_asset_price_in_currency(
+                    other_token,
+                    self.token_as_currency,
+                    self.portfolio[other_token],
+                )
+            )
+            self.metrics["budget_in_currency"].append(
+                current_asset_price_in_currency * self.portfolio[other_token]
+            )
+        elif self.pool.amm_agent.type == "Mariana":
+            other_tokens = self.pool.amm_agent._get_other_token(self.token_as_currency)
+            total_sum = 0
+            for token in other_tokens:
+                current_asset_price_in_currency = (
+                    self.pool.amm_agent.get_asset_price_in_currency(
+                        token,
+                        self.token_as_currency,
+                        self.portfolio[token],
+                    )
+                )
+                total_sum += current_asset_price_in_currency * self.portfolio[token]
+            self.metrics["budget_in_currency"].append(total_sum)
+            

@@ -1,6 +1,5 @@
-import math
-import random
 from typing import TYPE_CHECKING
+import math
 
 from trade_simulator.amm_agents.basic_amm import AMM
 
@@ -9,129 +8,182 @@ if TYPE_CHECKING:
     from trade_simulator.pool.pool import Pool
 
 
-class MarianaAMM(AMM):
-    def __init__(
-        self,
-        pool: "Pool",
-        weights: dict[str, float] = None,
-        fee_rate: float = 0.0005,
-        **kwargs,
-    ):
-        """
-        pool.tokens_info: {'EUR': amt, 'SGD': amt, 'CHF': amt}
-        weights: dict of token weights summing to 1, default equal.
-        fee_rate: комиссия на входящие объёмы.
-        """
+class ProductInvariantAMM(AMM):
+    def __init__(self, pool: "Pool", **kwargs):
         super().__init__(pool, **kwargs)
-        symbols = list(pool.tokens_info.keys())
-        if weights is None:
-            w = 1.0 / len(symbols)
-            self.weights = {t: w for t in symbols}
-        else:
-            self.weights = weights
-        self.fee_rate = fee_rate
-        self.k = self._compute_invariant(pool.tokens_info)
 
-    def _compute_invariant(self, reserves: dict[str, float]) -> float:
+        self.type = "ProductInvariant"
+        self.tokens = list(self.pool.tokens_info.keys())
+
+        self.pool.metrics["k"] = []
+        for token in self.tokens:
+            for other in self.tokens:
+                if token != other:
+                    self.pool.metrics[f"price_of_{token}_in_{other}"] = []
+
+        self._write_k_metric()
+
+    def _write_k_metric(self):
+        k = self._calculate_k()
+        self.pool.metrics["k"].append(k)
+
+    def write_metrics(self):
+        self._write_k_metric()
+        for token_in in self.tokens:
+            for token_out in self.tokens:
+                if token_in != token_out:
+                    try:
+                        price = self.get_asset_price_in_currency(token_in, token_out)
+                        self.pool.metrics[f"price_of_{token_in}_in_{token_out}"].append(price)
+                    except Exception:
+                        self.pool.metrics[f"price_of_{token_in}_in_{token_out}"].append(None)
+
+    def _calculate_k(self):
         k = 1.0
-        for token, R in reserves.items():
-            k *= R ** self.weights[token]
+        for balance in self.pool.tokens_info.values():
+            k *= balance
         return k
 
-    def execute_order(self, order: "Order"):
+    def _get_output_amount(self, token_in: str, token_out: str, dx: float) -> float:
+        """
+        Вычисляет, сколько можно получить token_out за dx token_in.
+        """
+        reserves = self.pool.tokens_info.copy()
+        reserves[token_in] += dx * (1 - self.fee)  # учёт комиссии
+
+        k = self._calculate_k()
+
+        # Чисто математически, найдём dy, чтобы новый k оставался прежним
+        # new_k = (x + dx * fee) * y' * z' * ... = k
+        # => y' = k / (x + dx * fee * prod остальных)
+
+        denominator = 1.0
+        for token, amount in reserves.items():
+            if token != token_out:
+                denominator *= amount
+
+        new_token_out_balance = k / denominator
+        dy = self.pool.tokens_info[token_out] - new_token_out_balance
+
+        if dy < 0 or dy > self.pool.tokens_info[token_out]:
+            raise ValueError("Invalid output amount computed.")
+
+        return dy
+
+    def get_asset_price_in_currency(self, token_as_asset: str, token_as_currency: str, amount_of_asset: float = 1.0) -> float:
+        dy = amount_of_asset
+        dx = self._get_input_amount(token_as_currency, token_as_asset, dy)
+        return dx / dy
+
+    def _get_input_amount(self, token_in: str, token_out: str, dy: float) -> float:
+        """
+        Вычисляет, сколько нужно token_in, чтобы получить dy token_out.
+        """
+        if dy >= self.pool.tokens_info[token_out]:
+            raise ValueError("Not enough liquidity")
+
+        k = self._calculate_k()
+
+        reserves = self.pool.tokens_info.copy()
+        reserves[token_out] -= dy
+
+        denominator = 1.0
+        for token, amount in reserves.items():
+            if token != token_in:
+                denominator *= amount
+
+        new_token_in_balance = k / denominator
+        dx_without_fee = new_token_in_balance - self.pool.tokens_info[token_in]
+        dx = dx_without_fee / (1 - self.fee)
+        return dx
+
+    def _buy_market(self, order: "Order"):
+        token_out = order.token
+        token_in = next(t for t in self.tokens if t != token_out)
+
+        dy = order.token_volume
+
+        if dy >= self.pool.tokens_info[token_out]:
+            order.status = "Canceled"
+            return
+
+        try:
+            dx = self._get_input_amount(token_in, token_out, dy)
+        except ValueError:
+            order.status = "Canceled"
+            return
+
+        if order.trader.portfolio[token_in] < dx:
+            order.status = "Canceled"
+            return
+
+        # Обновление портфеля и пула
+        order.trader.portfolio[token_in] -= dx
+        order.trader.portfolio[token_out] += dy
+        self.pool.tokens_info[token_in] += dx
+        self.pool.tokens_info[token_out] -= dy
+
+        order.status = "Succeed"
+
+    def _sell_market(self, order: "Order"):
+        token_in = order.token
+        token_out = next(t for t in self.tokens if t != token_in)
+
+        dx = order.token_volume
+        if order.trader.portfolio[token_in] < dx:
+            order.status = "Canceled"
+            return
+
+        try:
+            dy = self._get_output_amount(token_in, token_out, dx)
+        except ValueError:
+            order.status = "Canceled"
+            return
+
+        if dy > self.pool.tokens_info[token_out]:
+            order.status = "Canceled"
+            return
+
+        order.trader.portfolio[token_in] -= dx
+        order.trader.portfolio[token_out] += dy
+        self.pool.tokens_info[token_in] += dx
+        self.pool.tokens_info[token_out] -= dy
+
+        order.status = "Succeed"
+
+    def get_price(self, token_in: str, token_out: str) -> float:
+        return self.get_asset_price_in_currency(token_in, token_out)
+
+    def _process_limit_order(self, order: "Order", timestamp: int):
+        if order.lifetime is not None and timestamp - order.creation_timestamp > order.lifetime:
+            order.status = "Canceled"
+            return
+
+        token_in = order.token if order.operation_type == "SELL" else next(t for t in self.tokens if t != order.token)
+        token_out = next(t for t in self.tokens if t != token_in)
+        price = self.get_price(token_in, token_out)
+
+        if order.operation_type == "BUY":
+            if price <= order.limit_price:
+                self._buy_market(order)
+        else:
+            if price >= order.limit_price:
+                self._sell_market(order)
+
+    def execute_order(self, order: "Order", timestamp: int):
         if order.status != "Awaiting":
             return
 
-        R = self.pool.tokens_info
-        # BUY: трейдер хочет получить `want`, отдавая один из других токенов или оба
-        if order.operation_type == "BUY":
-            want = order.token
-            gives = [t for t in R if t != want]
+        if order.order_type == "Market":
+            if order.operation_type == "BUY":
+                self._buy_market(order)
+            else:
+                self._sell_market(order)
+        elif order.order_type == "Limit":
+            self._process_limit_order(order, timestamp)
+        else:
+            raise ValueError(f"Unsupported order type {order.order_type}.")
+        
+    def _get_other_token(self, token: str) -> list[str]:
+        return [t for t in self.tokens if t != token]
 
-            best = None  # (give, amount_in_with_fee, amount_in, fee)
-            for give in gives:
-                # Рассчитываем объём входа для каждого варианта
-                fixed_prod = 1.0
-                for t in R:
-                    if t != want:
-                        fixed_prod *= R[t] ** self.weights[t]
-                R_want_target = R[want] - order.token_volume
-                if R_want_target <= 0:
-                    continue
-                prod_others = 1.0
-                for t in R:
-                    if t not in (want, give):
-                        prod_others *= R[t] ** self.weights[t]
-                numerator = self.k / (
-                    (R_want_target ** self.weights[want]) * prod_others
-                )
-                R_give_new = numerator ** (1.0 / self.weights[give])
-                amount_in = R_give_new - R[give]
-                fee = amount_in * self.fee_rate
-                amount_in_with_fee = amount_in
-                total_in = amount_in + fee
-                if best is None or amount_in_with_fee < best[1]:
-                    # best = (give, amount_in_with_fee, amount_in, fee)
-                    best = (give, total_in, amount_in, fee)
-
-            if best is None:
-                order.status = "Canceled"
-                return
-
-            give, amount_in_with_fee, amount_in, fee = best
-            if order.trader.portfolio[give] < amount_in_with_fee:
-                order.status = "Canceled"
-                return
-
-            # order.trader.portfolio[give] -= amount_in_with_fee
-            # self.pool.tokens_info[give] += amount_in
-            order.trader.portfolio[give] -= total_in
-            self.pool.tokens_info[give] += total_in
-            order.trader.portfolio[want] += order.token_volume
-            self.pool.tokens_info[want] -= order.token_volume
-
-        else:  # SELL: трейдер продаёт `sell`, получает один из других токенов
-            sell = order.token
-            buys = [t for t in R if t != sell]
-
-            best = None  # (buy, amount_out)
-            for buy in buys:
-                amount_in = order.token_volume
-                fee = amount_in * self.fee_rate
-                net_in = amount_in - fee
-                R_sell_new = R[sell] + net_in
-                prod_others = 1.0
-                for t in R:
-                    if t not in (sell, buy):
-                        prod_others *= R[t] ** self.weights[t]
-                fixed = prod_others * (R_sell_new ** self.weights[sell])
-                R_buy_new = (self.k / fixed) ** (1.0 / self.weights[buy])
-                amount_out = R[buy] - R_buy_new
-                if amount_out <= 0:
-                    continue
-                if best is None or amount_out > best[1]:
-                    best = (buy, amount_out, net_in, fee)
-
-            if best is None:
-                order.status = "Canceled"
-                return
-
-            buy, amount_out, net_in, fee = best
-            if order.trader.portfolio[sell] < order.token_volume:
-                order.status = "Canceled"
-                return
-
-            order.trader.portfolio[sell] -= order.token_volume
-            self.pool.tokens_info[sell] += net_in
-            order.trader.portfolio[buy] += amount_out
-            self.pool.tokens_info[buy] -= amount_out
-
-        order.status = "Succeed"
-        # Пересчитываем инвариант после сделки
-        self.k = self._compute_invariant(self.pool.tokens_info)
-
-    def sort_orders(self):
-        random.shuffle(self.pool.order_book)
-        self.pool.order_book = sorted(
-            self.pool.order_book, key=lambda o: (o.creation_timestamp, o.priority)
-        )
