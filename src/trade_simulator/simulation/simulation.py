@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import shutil
 
 from tqdm import tqdm
 
@@ -16,7 +17,7 @@ class Simulation:
         self.steps = self.simulation_build_args["steps_of_simulation"]
         self.simulation_meta_args = kwargs["meta_info"]
 
-        # self.prepare_experiment_environment()
+        self.prepare_experiment_environment()
         self.create_pools()
         self.create_agents()
 
@@ -28,8 +29,8 @@ class Simulation:
             for agent in self.agents:
                 agent.run_agent_action(step)
 
-        with open("pool_3.json", "w") as f:
-            json.dump(self.pools[1].metrics, f)
+        self.save_raw_pools_data()
+
 
     def create_pools(self):
         pools_settings = self.simulation_build_args["pools_settings"]
@@ -61,7 +62,7 @@ class Simulation:
                 raise ValueError(f"Unknown agent type {agent_type}.")
             self.agents.append(agent)
 
-    def prepare_experiment_environment(self):
+    def prepare_experiment_environment(self, delete_existing_folder: bool = True):
         experiment_id = self.simulation_meta_args["experiment_id"]
         experiment_name = self.simulation_meta_args["experiment_name"]
         experiment_name = "_".join(experiment_name.split())
@@ -78,9 +79,21 @@ class Simulation:
         if not os.path.exists(self.experiment_logs_path):
             os.makedirs(self.experiment_logs_path)
         else:
-            raise ValueError(
-                f"Experiment with name {experiment_name} and id {experiment_id} already exists."
-            )
+            if not delete_existing_folder:
+                raise ValueError(
+                    f"Experiment with name {experiment_name} and id {experiment_id} already exists."
+                )
+            for item in os.listdir(self.experiment_logs_path):
+                item_path = os.path.join(self.experiment_logs_path, item)
+                if os.path.isfile(item_path) or os.path.islink(item_path):
+                    os.unlink(item_path)
+                elif os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+
+    def save_raw_pools_data(self):
+        for pool_id, pool in self.pools.items():
+            with open(f"{self.experiment_logs_path}/pool_{pool_id}.json", "w") as f:
+                json.dump(pool.metrics, f)
 
     def generate_metrics_by_pool(self, pool: Pool):
         pass
