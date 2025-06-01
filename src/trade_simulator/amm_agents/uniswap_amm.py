@@ -98,7 +98,28 @@ class UniswapAMM(AMM):
 
         order.status = "Succeed"
 
-    def execute_order(self, order: "Order"):
+    def get_price(self, token_in: str, token_out: str) -> float:
+        x = self.pool.tokens_info[token_in]
+        y = self.pool.tokens_info[token_out]
+        if x == 0:
+            return float('inf')
+        return y / x
+
+    def _process_limit_order(self, order: "Order", timestamp: int):
+        if order.lifetime is not None and timestamp - order.creation_timestamp > order.lifetime:
+            order.status = "Canceled"
+            return
+        token_in = order.token if order.operation_type == "SELL" else self._get_other_token(order.token)
+        token_out = self._get_other_token(token_in)
+        price = self.get_price(token_in, token_out)
+        if order.operation_type == "BUY":
+            if price <= order.limit_price:
+                self._buy_market(order)
+        else:
+            if price >= order.limit_price:
+                self._sell_market(order)
+
+    def execute_order(self, order: "Order", timestamp: int):
         if order.status != "Awaiting":
             return
 
@@ -107,5 +128,7 @@ class UniswapAMM(AMM):
                 self._buy_market(order)
             else:
                 self._sell_market(order)
+        elif order.order_type == "Limit":
+            self._process_limit_order(order, timestamp)
         else:
             raise ValueError(f"Unsupported order type {order.order_type}.")

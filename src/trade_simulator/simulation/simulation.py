@@ -36,7 +36,9 @@ class Simulation:
                 agent.run_agent_action(step)
             for pool in self.pools.values():
                 pool.amm_agent.write_metrics()
+        self.save_metrics_after_simulation()
 
+    def save_metrics_after_simulation(self):
         self.save_raw_pools_data()
         self.save_raw_agents_data()
         for pool in self.pools.values():
@@ -44,7 +46,8 @@ class Simulation:
         path = f"{self.experiment_logs_path}/agents_metrics"
         if not os.path.exists(path):
             os.makedirs(path)
-        for agent in self.agents:
+        print("Generating metrics by agents...")
+        for agent in tqdm(self.agents):
             self.generate_metrics_by_agent(agent)
 
     def create_pools(self):
@@ -113,6 +116,7 @@ class Simulation:
                     shutil.rmtree(item_path)
 
     def save_raw_pools_data(self):
+        print("Saving raw pools data...")
         path = f"{self.experiment_logs_path}/raw_pools_data"
         if not os.path.exists(path):
             os.makedirs(path)
@@ -121,10 +125,11 @@ class Simulation:
                 json.dump(pool.metrics, f)
 
     def save_raw_agents_data(self):
+        print("Saving raw agents data...")
         path = f"{self.experiment_logs_path}/raw_agents_data"
         if not os.path.exists(path):
             os.makedirs(path)
-        for agent in self.agents:
+        for agent in tqdm(self.agents):
             with open(f"{path}/{agent.type}_{agent.id}.json", "w") as f:
                 json.dump(agent.metrics, f)
 

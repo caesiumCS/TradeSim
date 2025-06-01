@@ -23,9 +23,13 @@ class AMM(ABC):
 
     def sort_orders(self):
         # Перемешиваем для рандомного порядка среди ордеров с одинаковым временем и приоритетом
-        random.shuffle(self.pool.order_book)
-        self.pool.order_book = sorted(
-            self.pool.order_book, key=lambda o: (o.creation_timestamp, o.priority)
+        random.shuffle(self.market_orders)
+        random.shuffle(self.limit_orders)
+        self.market_orders = sorted(
+            self.market_orders, key=lambda o: (o.creation_timestamp, o.priority)
+        )
+        self.limit_orders = sorted(
+            self.limit_orders, key=lambda o: (o.creation_timestamp, o.priority)
         )
 
     @abstractmethod
@@ -47,8 +51,30 @@ class AMM(ABC):
 
         self.pool.order_book = orders_to_statuses["Awaiting"]
 
-    def execute_orders(self):
-        self.sort_orders()
+    def get_orders_by_type(self):
+        limit_orders = []
+        market_orders = []
         for order in self.pool.order_book:
-            self.execute_order(order)
+            if order.order_type == "Limit":
+                limit_orders.append(order)
+            elif order.order_type == "Market":
+                market_orders.append(order)
+        return limit_orders, market_orders
+
+    @abstractmethod
+    def _process_limit_order(self, order: "Order", timestamp: int):
+        pass
+
+    def process_limit_orders(self, timestamp: int):
+        for order in self.limit_orders:
+            if order.status == "Awaiting":
+                self._process_limit_order(order, timestamp)
+
+    def execute_orders(self, timestamp: int):
+        self.limit_orders, self.market_orders = self.get_orders_by_type()
+        self.sort_orders()
+        self.process_limit_orders(timestamp)
+        for order in self.market_orders:
+            self.execute_order(order, timestamp)
+            self.process_limit_orders(timestamp)
         self.clean_order_book()

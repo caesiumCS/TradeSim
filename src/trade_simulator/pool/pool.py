@@ -49,7 +49,7 @@ class Pool:
             self.last_timestamp_to_check_orderbook + self.steps_to_check_orderbook
             >= timestamp
         ):
-            self.amm_agent.execute_orders()
+            self.amm_agent.execute_orders(timestamp)
             self.last_timestamp_to_check_orderbook = timestamp
         self.amm_agent.clean_order_book()
         for token in self.tokens_info.keys():

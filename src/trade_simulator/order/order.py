@@ -16,6 +16,7 @@ class Order:
         cancel_possibility: bool = True,
         lifetime: Optional[int] = None,
         order_type: str = "Market",
+        limit_price: Optional[float] = None,
     ):
         self.trader = trader
         self.creation_timestamp = creation_timestamp
