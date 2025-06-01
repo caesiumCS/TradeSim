@@ -11,7 +11,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         # TODO - check input parameters
 
         self.trader_type = "SinglePoolFoolishRandomTrader"
-        self.parse_portfolio(kwargs["portfolio"])
+        
         self.steps_to_make_new_transaction = kwargs["steps_to_make_new_transaction"]
         self.last_action_timestamp = 0
         self.pool_id = [kwargs["pool_id"]]
@@ -21,12 +21,7 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
     def run_agent_action(self, timestamp: int):
         if timestamp - self.last_action_timestamp >= self.steps_to_make_new_transaction:
             self.make_order(timestamp)
-
-    # TODO - move to abc class
-    def parse_portfolio(self, input_portfolio):
-        self.portfolio = {}
-        for el in input_portfolio:
-            self.portfolio[el["name"]] = el["quantity"]
+        self.update_metrics()
 
     def make_order_decision(self) -> bool:
         return random.random() < self.probability_to_make_order

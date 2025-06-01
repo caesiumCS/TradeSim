@@ -93,8 +93,11 @@ class Simulation:
                     shutil.rmtree(item_path)
 
     def save_raw_pools_data(self):
+        path = f"{self.experiment_logs_path}/raw_pools_data"
+        if not os.path.exists(path):
+            os.makedirs(path)
         for pool_id, pool in self.pools.items():
-            with open(f"{self.experiment_logs_path}/pool_{pool_id}.json", "w") as f:
+            with open(f"{path}/pool_{pool_id}.json", "w") as f:
                 json.dump(pool.metrics, f)
 
     def generate_metrics_by_pool(self, pool: Pool):
