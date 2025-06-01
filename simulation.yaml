@@ -16,6 +16,7 @@ simulation:
 
         amm_settings:
           type: Uniswap
+          fee: 0.003
 
         tokens:
           # - name: VEGA

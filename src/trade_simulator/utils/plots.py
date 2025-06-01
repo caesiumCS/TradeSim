@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from trade_simulator.pool.pool import Pool
 
 def plot_pool_balace(pool: Pool, folder_path:str):
-   plt.figure(figsize=(10, 6))
+   plt.figure(figsize=(15, 6))
    plt.grid()
    plt.title(f"Pool {pool.name} Balance Over Time")
    plt.xlabel("Time Step")
