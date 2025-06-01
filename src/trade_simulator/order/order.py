@@ -28,6 +28,7 @@ class Order:
         self.operation_type = operation_type
         self.status = "Awaiting"
         self.order_type = order_type
+        self.limit_price = limit_price
         self.check_order_fields()
 
     def check_order_fields(self):
