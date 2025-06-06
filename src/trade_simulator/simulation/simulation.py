@@ -12,10 +12,10 @@ from trade_simulator.agents.single_pool_foolish_random_trader import (
 from trade_simulator.pool.pool import Pool
 from trade_simulator.utils.plots import (
     plot_agent_balance,
+    plot_agent_portfolio_in_currency,
+    plot_pair_balance,
     plot_pool_balace,
     plot_uniswapv2_k,
-    plot_pair_balance,
-    plot_agent_portfolio_in_currency,
 )
 from trade_simulator.utils.utils import check_pools_settings
 
@@ -88,7 +88,6 @@ class Simulation:
         elif agent_type == "SimpleMarketMaker":
             agent = SimpleMarketMaker(**agent_settings)
             for rule in agent.rules:
-                print(rule)
                 agent.pools[rule["pool_id"]] = self.pools[rule["pool_id"]]
         else:
             raise ValueError(f"Unknown agent type {agent_type}.")

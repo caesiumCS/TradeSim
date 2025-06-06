@@ -10,7 +10,7 @@ simulation:
   pools_settings:
     pools:
       - id: 1
-        name: "USDT to DOGE pool"
+        name: "USDT to DAI pool"
         steps_to_check_orderbook: 1
         step_to_start_simulation: 0
 
@@ -31,7 +31,7 @@ simulation:
           token_as_currency: USDT
           rules:
             - pool_id: 1
-              token_as_asset: DOGE
+              token_as_asset: DAI
               token_as_currency: USDT
               lower_bound_of_asset_price_in_currency: 0.92
               upper_bound_of_asset_price_in_currency: 1.08
@@ -42,7 +42,7 @@ simulation:
           portfolio:
             - name: USDT
               quantity: 1000
-            - name: DOGE
+            - name: DAI
               quantity: 1000
 
     agents_batches:

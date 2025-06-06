@@ -54,7 +54,6 @@ class SimpleMarketMaker(BasicAgent):
 
         # TODO - make a smarter logic for choosing volume
         if current_asset_price_in_currency < lower_bound_of_asset_price_in_currency:
-            # Buy asset
             order = Order(
                 trader=self,
                 creation_timestamp=timestamp,
@@ -66,7 +65,6 @@ class SimpleMarketMaker(BasicAgent):
             )
             pool.add_order(order)
         elif current_asset_price_in_currency > upper_bound_of_asset_price_in_currency:
-            # Sell asset
             order = Order(
                 trader=self,
                 creation_timestamp=timestamp,

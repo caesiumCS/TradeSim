@@ -12,3 +12,4 @@ coverage.xml
 *.json
 .vscode/
 Experiments_logs
+.*.DS_Store.*

@@ -14,7 +14,6 @@ class AMM(ABC):
         self.pool = pool
         self.settings = kwargs
         self.type = None
-
         self.fee = 0.0 if "fee" not in self.settings else self.settings["fee"]
 
     @abstractmethod
@@ -22,7 +21,6 @@ class AMM(ABC):
         pass
 
     def sort_orders(self):
-        # Перемешиваем для рандомного порядка среди ордеров с одинаковым временем и приоритетом
         random.shuffle(self.market_orders)
         random.shuffle(self.limit_orders)
         self.market_orders = sorted(
