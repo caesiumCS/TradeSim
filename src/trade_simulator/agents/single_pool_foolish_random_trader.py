@@ -73,4 +73,3 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
                 )
                 total_sum += current_asset_price_in_currency * self.portfolio[token]
             self.metrics["budget_in_currency"].append(total_sum)
-            
