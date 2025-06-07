@@ -20,9 +20,9 @@ def test_check_amm_settings():
     ):
         check_amm_settings(amm_settings, pool_settings)
 
-    amm_settings["type"] = "Uniswap"
+    amm_settings["type"] = "UniswapV2"
     pool_settings["tokens"] = []
-    with pytest.raises(ValueError, match="For Uniswap type 2 tokens only required."):
+    with pytest.raises(ValueError, match="For UniswapV2 type 2 tokens only required."):
         check_amm_settings(amm_settings, pool_settings)
     pool_settings["tokens"] = [1, 2]
     check_amm_settings(amm_settings, pool_settings)

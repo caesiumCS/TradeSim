@@ -20,7 +20,7 @@ def check_amm_settings(amm_settings: Dict[str, Any], pool_settings: Dict[str, An
     if amm_type not in AMM_TYPES:
         raise ValueError(f"Amm type '{amm_type}' is not supported.")
 
-    if amm_type == "Uniswap" and len(pool_settings["tokens"]) != 2:
+    if amm_type == "UniswapV2" and len(pool_settings["tokens"]) != 2:
         raise ValueError(f"For {amm_type} type 2 tokens only required.")
 
 

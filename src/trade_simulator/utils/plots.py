@@ -46,9 +46,9 @@ def plot_agent_balance(agent, folder_path: str):
 def plot_pair_balance(pool: Pool, folder_path: str):
     plt.figure(figsize=(15, 6))
     plt.grid()
-    plt.title(f"Pair Balance Over Time for Pool {pool.name}")
+    plt.title(f"Pair Price Over Time for Pool {pool.name}")
     plt.xlabel("Time Step")
-    plt.ylabel("Balance")
+    plt.ylabel("Price")
     plt.plot(
         pool.metrics[f"price_of_{pool.amm_agent.token_a}_{pool.amm_agent.token_b}"],
         label=f"{pool.amm_agent.token_a} Price in {pool.amm_agent.token_b}",

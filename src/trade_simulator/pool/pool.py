@@ -30,7 +30,7 @@ class Pool:
             self.metrics[f"number_of_{status}_orders_in_order_book"] = []
 
     def generate_amm(self, amm_settings: Dict[str, Any]) -> AMM:
-        if amm_settings["type"] == "Uniswap":
+        if amm_settings["type"] == "UniswapV2":
             return UniswapAMM(self, **amm_settings)
         elif amm_settings["type"] == "Mariana":
             return None

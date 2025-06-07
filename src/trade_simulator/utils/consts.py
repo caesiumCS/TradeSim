@@ -1,5 +1,5 @@
 AMM_TYPES = [
-    "Uniswap",
+    "UniswapV2",
     "Mariana",
 ]
 
