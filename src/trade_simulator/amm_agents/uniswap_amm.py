@@ -1,4 +1,3 @@
-import random
 from typing import TYPE_CHECKING
 
 from trade_simulator.amm_agents.basic_amm import AMM
@@ -21,6 +20,9 @@ class UniswapAMM(AMM):
         self.pool.metrics["k"].append(
             self.pool.tokens_info[self.token_a] * self.pool.tokens_info[self.token_b]
         )
+        self.pool.metrics["profit_from_fees"] = {}
+        for token in tokens:
+            self.pool.metrics["profit_from_fees"][token] = {"timestamp": [0], "value": [0]}
 
     def write_metrics(self):
         self.pool.metrics["k"].append(
@@ -33,18 +35,9 @@ class UniswapAMM(AMM):
             self.get_asset_price_in_currency(self.token_b, self.token_a)
         )
 
-    def _get_other_token(self, token: str) -> str:
-        """
-        Возвращает другой токен в пуле, кроме указанного.
-        UniswapV2 предполагает, что в пуле только два токена.
-        :param token: Токен, для которого нужно найти другой токен.
-        :return: Другой токен в пуле.
-        """
-        return self.token_b if token == self.token_a else self.token_a
-
-    def _buy_market(self, order: "Order"):
+    def _buy_market(self, order: "Order", timestamp: int):
         token_out = order.token  # токен, который трейдер хочет получить
-        token_in = self._get_other_token(token_out)
+        token_in = order.second_token
 
         x = self.pool.tokens_info[token_in]
         y = self.pool.tokens_info[token_out]
@@ -65,6 +58,14 @@ class UniswapAMM(AMM):
             order.status = "Canceled"
             return
 
+        if self.pool.metrics["profit_from_fees"][token_in]["timestamp"][-1] != timestamp:
+            self.pool.metrics["profit_from_fees"][token_in]["timestamp"].append(
+                timestamp)
+            self.pool.metrics["profit_from_fees"][token_in]["value"].append(0)
+            self.pool.metrics["profit_from_fees"][token_in]["value"][-1] += self.pool.metrics["profit_from_fees"][token_in]["value"][-2]
+        self.pool.metrics["profit_from_fees"][token_in]["value"][-1] += dx - dx_without_fee
+
+
         # Обновление портфеля и пула
         order.trader.portfolio[token_in] -= dx
         order.trader.portfolio[token_out] += dy
@@ -74,9 +75,9 @@ class UniswapAMM(AMM):
 
         order.status = "Succeed"
 
-    def _sell_market(self, order: "Order"):
+    def _sell_market(self, order: "Order", timestamp: int):
         token_in = order.token  # токен, который трейдер продаёт
-        token_out = self._get_other_token(token_in)
+        token_out = order.second_token
 
         dx = order.token_volume
         if order.trader.portfolio[token_in] < dx:
@@ -96,6 +97,13 @@ class UniswapAMM(AMM):
         if dy > y:
             order.status = "Canceled"
             return
+
+        if self.pool.metrics["profit_from_fees"][token_in]["timestamp"][-1] != timestamp:
+            self.pool.metrics["profit_from_fees"][token_in]["timestamp"].append(
+                timestamp)
+            self.pool.metrics["profit_from_fees"][token_in]["value"].append(0)
+            self.pool.metrics["profit_from_fees"][token_in]["value"][-1] += self.pool.metrics["profit_from_fees"][token_in]["value"][-2]
+        self.pool.metrics["profit_from_fees"][token_in]["value"][-1] += abs(dx_with_fee - dx)
 
         # Обновление портфеля и пула
         order.trader.portfolio[token_in] -= dx
@@ -141,16 +149,16 @@ class UniswapAMM(AMM):
         token_in = (
             order.token
             if order.operation_type == "SELL"
-            else self._get_other_token(order.token)
+            else order.second_token
         )
-        token_out = self._get_other_token(token_in)
+        token_out = order.second_token if order.operation_type == "SELL" else order.token
         price = self.get_price(token_in, token_out)
         if order.operation_type == "BUY":
             if price <= order.limit_price:
-                self._buy_market(order)
+                self._buy_market(order, timestamp)
         else:
             if price >= order.limit_price:
-                self._sell_market(order)
+                self._sell_market(order, timestamp)
 
     def execute_order(self, order: "Order", timestamp: int):
         if order.status != "Awaiting":
@@ -158,9 +166,9 @@ class UniswapAMM(AMM):
 
         if order.order_type == "Market":
             if order.operation_type == "BUY":
-                self._buy_market(order)
+                self._buy_market(order, timestamp)
             else:
-                self._sell_market(order)
+                self._sell_market(order, timestamp)
         elif order.order_type == "Limit":
             self._process_limit_order(order, timestamp)
         else:

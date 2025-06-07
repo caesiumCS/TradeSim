@@ -63,6 +63,7 @@ class SimpleMarketMaker(BasicAgent):
                 second_token=token_as_currency,
             )
             pool.add_order(order)
+            self.metrics["buy_orders"].append(timestamp)
         elif current_asset_price_in_currency > upper_bound_of_asset_price_in_currency:
             order = Order(
                 trader=self,
@@ -74,6 +75,7 @@ class SimpleMarketMaker(BasicAgent):
                 second_token=token_as_currency,
             )
             pool.add_order(order)
+            self.metrics["sell_orders"].append(timestamp)
         rule["steps_without_action"] = 0
 
     def run_agent_action(self, timestamp: int):

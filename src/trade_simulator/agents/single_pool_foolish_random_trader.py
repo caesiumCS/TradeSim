@@ -51,5 +51,6 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
             priority=1,
             second_token=self.get_other_token(token)
         )
+        self.metrics[f"{operation_type.lower()}_orders"].append(timestamp)
         self.last_action_timestamp = timestamp
         self.pool.add_order(order)

@@ -14,7 +14,9 @@ from trade_simulator.utils.plots import (
     plot_agent_balance,
     plot_pair_balance,
     plot_pool_balace,
-    plot_uniswapv2_k,
+    plot_k,
+    plot_profit_from_fees,
+    plot_agent_orders,
 )
 from trade_simulator.utils.utils import check_pools_settings
 
@@ -154,12 +156,15 @@ class Simulation:
         if not os.path.exists(path):
             os.makedirs(path)
         plot_pool_balace(pool, path)
+        plot_k(pool, path)
         if pool.amm_agent.type == "UniswapV2":
-            plot_uniswapv2_k(pool, path)
             plot_pair_balance(pool, path)
+        if "profit_from_fees" in pool.metrics:
+            plot_profit_from_fees(pool, path)
 
     def generate_metrics_by_agent(self, agent):
         path = f"{self.experiment_logs_path}/agents_metrics/{agent.type}_{agent.id}_metrics"
         if not os.path.exists(path):
             os.makedirs(path)
         plot_agent_balance(agent, path)
+        plot_agent_orders(agent, path)

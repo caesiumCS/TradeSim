@@ -5,7 +5,7 @@ meta_info:
   experiment_name: "Test run for development"
 
 simulation:
-  steps_of_simulation: 4000
+  steps_of_simulation: 10_000
 
   pools_settings:
     pools:
@@ -20,9 +20,28 @@ simulation:
 
         tokens:
           - name: USDT
-            start_quantity: 10_000
+            start_quantity: 100_000
           - name: DAI
-            start_quantity: 10_000
+            start_quantity: 100_000
+
+      - id: 2
+        name: "Mariana"
+        steps_to_check_orderbook: 1
+        step_to_start_simulation: 0
+
+        amm_settings:
+          type: Mariana
+          fee: 0.001
+
+        tokens:
+          - name: DAI
+            start_quantity: 100_000
+          - name: USDT
+            start_quantity: 100_000
+          - name: USDC
+            start_quantity: 100_000
+          - name: WETH
+            start_quantity: 100_000
 
   agents_settings:
     agents:
@@ -38,10 +57,23 @@ simulation:
               steps_to_make_action_in_case_passivity: 50
               max_assets_to_buy: 100
               max_assets_to_sell: 100
+            - pool_id: 2
+              token_as_asset: WETH
+              token_as_currency: USDC
+              lower_bound_of_asset_price_in_currency: 0.999
+              upper_bound_of_asset_price_in_currency: 1.001
+              middle_price: 1.0
+              steps_to_make_action_in_case_passivity: 50
+              max_assets_to_buy: 100
+              max_assets_to_sell: 100
           portfolio:
             - name: USDT
               quantity: 1000
             - name: DAI
+              quantity: 1000
+            - name: USDC
+              quantity: 1000
+            - name: WETH
               quantity: 1000
 
     agents_batches:
@@ -57,4 +89,22 @@ simulation:
             - name: USDT
               quantity: 100
             - name: DAI
+              quantity: 100
+
+      - number_of_agents: 100
+        agent_type: SinglePoolFoolishRandomTrader
+
+        agent_settings:
+          token_as_currency: USDC
+          pool_id: 2
+          steps_to_make_new_transaction: 10
+          probability_to_make_order: 0.5
+          portfolio:
+            - name: USDC
+              quantity: 100
+            - name: WETH
+              quantity: 100
+            - name: DAI
+              quantity: 100
+            - name: USDT
               quantity: 100

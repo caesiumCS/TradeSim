@@ -9,6 +9,8 @@ class BasicAgent(ABC):
         self.pools = {}
         self.metrics = {
             "portfolio": {},
+            "sell_orders": [],
+            "buy_orders": [],
         }
         self.parse_portfolio(kwargs["portfolio"])
 
