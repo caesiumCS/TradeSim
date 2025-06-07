@@ -12,7 +12,6 @@ class SimpleMarketMaker(BasicAgent):
         self.rules = kwargs["rules"]
         for rule in self.rules:
             rule["steps_without_action"] = 0
-        self.metrics["budget_in_currency"] = []
 
     def is_make_action(self, pool, rule, timestamp: int):
         if (
@@ -59,7 +58,7 @@ class SimpleMarketMaker(BasicAgent):
                 creation_timestamp=timestamp,
                 operation_type="BUY",
                 token=token_as_asset,
-                token_volume=random.choice(list(range(1, 100))),
+                token_volume=random.choice(list(range(1, 10))),
                 priority=1,  # lowest priority
                 second_token=token_as_currency,
             )
@@ -84,15 +83,3 @@ class SimpleMarketMaker(BasicAgent):
     def update_metrics(self):
         for token in self.portfolio.keys():
             self.metrics["portfolio"][token].append(self.portfolio[token])
-        for rule in self.rules:
-            pool = self.pools[rule["pool_id"]]
-            current_asset_price_in_currency = (
-                pool.amm_agent.get_asset_price_in_currency(
-                    rule["token_as_asset"],
-                    rule["token_as_currency"],
-                    self.portfolio[rule["token_as_asset"]],
-                )
-            )
-            self.metrics["budget_in_currency"].append(
-                current_asset_price_in_currency * self.portfolio[rule["token_as_asset"]]
-            )

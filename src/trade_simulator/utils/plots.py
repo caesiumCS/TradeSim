@@ -62,16 +62,3 @@ def plot_pair_balance(pool: Pool, folder_path: str):
         f"{folder_path}/{pool.name.replace(' ', '_')}_pair_balance_over_time.png"
     )
     plt.close()
-
-
-def plot_agent_portfolio_in_currency(agent, folder_path: str):
-    # TODO - custom currency
-    plt.figure(figsize=(15, 6))
-    plt.grid()
-    plt.title(f"Agent {agent.type}_{agent.id} Portfolio in Currency Over Time")
-    plt.xlabel("Time Step")
-    plt.ylabel("Portfolio Value in Currency")
-    plt.plot(agent.metrics["budget_in_currency"], label="USDT")
-    plt.legend()
-    plt.savefig(f"{folder_path}/portfolio_in_currency_over_time.png")
-    plt.close()
