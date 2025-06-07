@@ -79,7 +79,3 @@ class SimpleMarketMaker(BasicAgent):
     def run_agent_action(self, timestamp: int):
         for rule in self.rules:
             self.run_action_by_rule(rule, timestamp)
-
-    def update_metrics(self):
-        for token in self.portfolio.keys():
-            self.metrics["portfolio"][token].append(self.portfolio[token])

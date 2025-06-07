@@ -28,7 +28,6 @@ simulation:
     agents:
       - agent_type: SimpleMarketMaker
         agent_settings:
-          token_as_currency: USDT
           rules:
             - pool_id: 1
               token_as_asset: DAI

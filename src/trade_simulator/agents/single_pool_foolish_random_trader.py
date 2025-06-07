@@ -17,7 +17,6 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         self.probability_to_make_order = kwargs["probability_to_make_order"]
         self.pool = None
         self.metrics["pool_id"] = self.pool_id
-        self.token_as_currency = kwargs["token_as_currency"]
 
     def run_agent_action(self, timestamp: int):
         if timestamp - self.last_action_timestamp >= self.steps_to_make_new_transaction:
@@ -54,7 +53,3 @@ class SinglePoolFoolishRandomTrader(BasicAgent):
         )
         self.last_action_timestamp = timestamp
         self.pool.add_order(order)
-
-    def update_metrics(self):
-        for token in self.portfolio.keys():
-            self.metrics["portfolio"][token].append(self.portfolio[token])
